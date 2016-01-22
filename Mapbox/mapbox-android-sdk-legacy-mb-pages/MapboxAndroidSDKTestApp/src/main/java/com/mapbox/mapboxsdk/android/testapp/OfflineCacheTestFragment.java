@@ -33,7 +33,6 @@ public class OfflineCacheTestFragment extends Fragment {
                     dataButton.setText(R.string.dataOff);
                 } else {
                     mapView.setUseDataConnection(true);
-                    dataButton.setText(R.string.dataOn);
                 }
             }
         });

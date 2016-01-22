@@ -2,6 +2,7 @@
 <resources>
 
     <string name="appName">Mapbox Android SDK Test App</string>
+    <string name="navigation">Navigation</string>
     <string name="mainTestMap">Main Test Map</string>
     <string name="alternateTestMap">Alternate Test Map</string>
     <string name="markersTestMap">Markers Test</string>
