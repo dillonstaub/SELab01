@@ -1,23 +1,48 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:weightSum="4">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:mapbox="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
 
-    <EditText
-        android:hint="Input address"
-        android:id="@+id/navigation_address"
-        android:inputType="textPostalAddress"
+    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/navigationAddressBar"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
-        android:layout_width="fill_parent" />
+        android:weightSum="4">
 
-    <Button
-        android:id="@+id/navigation_address_button"
-        android:layout_height="wrap_content"
-        android:layout_weight="3"
+        <EditText
+            android:hint="Input address"
+            android:id="@+id/navigation_address"
+            android:inputType="textPostalAddress"
+            android:layout_height="match_parent"
+            android:layout_weight="1"
+            android:layout_width="fill_parent" />
+
+        <Button
+            android:id="@+id/navigation_address_button"
+            android:layout_height="wrap_content"
+            android:layout_weight="3"
+            android:layout_width="fill_parent"
+            android:text="SEARCH"/>
+    </LinearLayout>
+
+    <com.mapbox.mapboxsdk.views.MapView
+        android:id="@+id/navigationMapView"
         android:layout_width="fill_parent"
-        android:text="SEARCH"/>
+        android:layout_height="fill_parent"
+        android:layout_alignParentBottom="true"
+        android:visibility="invisible"
+        mapbox:mapid="@string/mapbox_id_satellite"
+        mapbox:accessToken="@string/testAccessToken"/>
 
-</LinearLayout>
+    <!--EditText
+        android:hint="Input address"
+        android:inputType="textPostalAddress"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/mapboxBlue"/-->
+
+</RelativeLayout>
