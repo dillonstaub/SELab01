@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -33,45 +34,47 @@ public class NavigationFragment extends Fragment {
 
         Button navigationAddressButton = (Button) view.findViewById(R.id.navigation_address_button);
         final LinearLayout addressBar = (LinearLayout) view.findViewById(R.id.navigationAddressBar);
+        final EditText addressTextBox = (EditText) view.findViewById(R.id.navigation_address);
         final MapView mapView = (MapView) view.findViewById(R.id.navigationMapView);
 
 
         navigationAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                navigationSearchButton(v, addressBar, mapView);
+                navigationSearchButton(v, addressBar, addressTextBox, mapView);
             }
         });
 
         return view;
     }
 
-    public void navigationSearchButton(View view, LinearLayout navAddressBar, MapView mapView) {
+    public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
 
-        /*MapView mv = (MapView) view.findViewById(R.id.navigationMapView);
-        mv.setCenter(new LatLng(-3.07881, 37.31369));
-        mv.setZoom(8);
+        String address = addressTextBox.getText().toString(); //"1330 Lower Bellbrook Rd";
+        //LatLng latAndLng = getLocationFromAddress(getActivity().getApplicationContext(), address);
+        Address location = getAddressObjFromAddress(getActivity().getApplicationContext(), address);
+        LatLng latAndLng = null;
 
-        Marker marker = new Marker("Mount Kilimanjaro", "", new LatLng(-3.06372, 36.71356));
-        marker.setMarker(getResources().getDrawable(R.drawable.right_arrow));
-        mv.addMarker(marker);*/
+        try {
+            latAndLng = new LatLng(location.getLatitude(), location.getLongitude() );
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            return;
+        }
 
-        //LinearLayout navAddressBar = (LinearLayout)view.findViewById(R.id.navigationAddressBar);
+        if (latAndLng == null)
+        {
+            return;
+        }
 
         navAddressBar.setVisibility(View.INVISIBLE);
-
         mapView.setVisibility(View.VISIBLE);
 
-        String address = "1330 Lower Bellbrook Rd";
-
-        LatLng latAndLng = getLocationFromAddress(getActivity().getApplicationContext(), address);
-
         mapView.setCenter(latAndLng);
-        mapView.setZoom(8);
+        mapView.setZoom(16);
 
-        Marker marker = new Marker("" + latAndLng.getLatitude(), "" + latAndLng.getLongitude(), latAndLng);
-        //marker.setMarker(getResources().getDrawable(R.drawable.right_arrow));
+        Marker marker = new Marker(location.getAddressLine(0), location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName(), latAndLng);
         mapView.addMarker(marker);
     }
 
@@ -96,5 +99,24 @@ public class NavigationFragment extends Fragment {
         }
 
         return p1;
+    }
+
+    public Address getAddressObjFromAddress(Context context, String strAddress) {
+        Geocoder coder = new Geocoder(context);
+        List<Address> address;
+        Address location = null;
+
+        try {
+            address = coder.getFromLocationName(strAddress, 5);
+            if (address == null) {
+                return null;
+            }
+            location = address.get(0);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+
+        return location;
     }
 }
