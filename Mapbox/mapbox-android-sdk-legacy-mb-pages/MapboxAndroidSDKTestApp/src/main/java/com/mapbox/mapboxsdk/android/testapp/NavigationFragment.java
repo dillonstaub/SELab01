@@ -11,6 +11,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 
 import com.mapbox.mapboxsdk.android.testapp.ui.CustomInfoWindow;
+import com.mapbox.mapboxsdk.android.testapp.ui.MarkerInfoWindow;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -85,7 +86,9 @@ public class NavigationFragment extends Fragment {
         mapView.setZoom(16);
 
         Marker marker = new Marker(location.getAddressLine(0), location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName() + "\nNavigate Here...", latAndLng);
-        //marker.setToolTip(new CustomInfoWindow(mapView));
+        marker.setTitle(location.getAddressLine(0) + ", " + location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName());
+        marker.setSubDescription("Navigate here...");
+        marker.setToolTip(new MarkerInfoWindow(mapView));
         mapView.addMarker(marker);
 
         mapView.setUserLocationEnabled(true);
