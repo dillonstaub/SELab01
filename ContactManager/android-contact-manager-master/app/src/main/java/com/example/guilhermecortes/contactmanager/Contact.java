@@ -1,6 +1,8 @@
 package com.example.guilhermecortes.contactmanager;
 
+import android.content.SharedPreferences;
 import android.net.Uri;
+import android.preference.PreferenceManager;
 
 /**
  * Created by guilhermecortes on 23/01/15.
