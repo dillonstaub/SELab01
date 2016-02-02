@@ -2,10 +2,14 @@ package com.example.guilhermecortes.contactmanager;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.text.Editable;
+import android.text.Html;
 import android.text.TextWatcher;
+import android.text.method.LinkMovementMethod;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -21,6 +25,8 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
+
+
 
 
 public class MainActivity extends Activity {
@@ -119,7 +125,7 @@ public class MainActivity extends Activity {
 
     private class ContactListAdapter extends ArrayAdapter<Contact>{
         public ContactListAdapter(){
-            super (MainActivity.this, R.layout.listview_item, Contacts);
+            super(MainActivity.this, R.layout.listview_item, Contacts);
         }
 
         //criar função para retornar o emelento do array
@@ -136,8 +142,20 @@ public class MainActivity extends Activity {
             phone.setText(currentContact.get_phone());
             TextView email = (TextView) view.findViewById(R.id.emailAddress);
             email.setText(currentContact.get_email());
-            TextView address = (TextView) view.findViewById(R.id.cAddress);
-            address.setText(currentContact.get_address());
+
+            TextView address = null;
+            SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
+            boolean use_hyperlinks = (!pref_thing.getBoolean("address",false));
+            if(use_hyperlinks) {
+                address = (TextView) view.findViewById(R.id.cAddress);
+                address.setText(Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> "));
+                address.setMovementMethod(LinkMovementMethod.getInstance());
+            } else {
+                address = (TextView) view.findViewById(R.id.cAddress);
+                address.setText(currentContact.get_address());
+            }
+
+
             ImageView ivContactImage = (ImageView) view.findViewById(R.id.ivContactImage);
             ivContactImage.setImageURI(currentContact.get_imageURI());
 
@@ -162,9 +180,15 @@ public class MainActivity extends Activity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            //int x = 9 / 0;
+           // this.fragment
+            this.startActivity(new Intent(this, SettingsActivity.class));
+            //setContentView(R.layout.privacy_settings_view);
             return true;
         }
 
         return super.onOptionsItemSelected(item);
     }
+
+
 }

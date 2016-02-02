@@ -13,5 +13,6 @@
     <string name="user_phone_number">Phone Number</string>
     <string name="user_email">Email</string>
     <string name="user_address">Address</string>
+    <string name="title_activity_main2">Main2Activity</string>
 
 </resources>
