@@ -19,8 +19,8 @@
             android:debuggable="true"
             android:allowBackup="true"
             android:hardwareAccelerated="true"
-            android:icon="@drawable/ic_launcher"
             android:label="@string/appName"
+            android:icon="@drawable/ic_launcher"
             android:theme="@style/AppTheme">
         <activity
                 android:name="com.mapbox.mapboxsdk.android.testapp.MainActivity"
