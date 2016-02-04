@@ -29,6 +29,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NavigationInfoWindow extends InfoWindow {
+    private static final String TAG = "Navigation";
 
     private MapView mapView;
     private Double startLat;
@@ -55,24 +56,42 @@ public class NavigationInfoWindow extends InfoWindow {
         TextView link = (TextView) mView.findViewById(R.id.navigation_link);
         LinearLayout container = (LinearLayout) mView.findViewById(R.id.navigation_container);
 
-        link.setOnClickListener(new View.OnClickListener() {
+        /*link.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Log.i("", "onClick() called");
                 OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
                 return;
             }
+        });*/
+
+        setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i(TAG, "onTouch() called");
+                if (event.getAction() == MotionEvent.ACTION_UP) {
+                    // Demonstrate custom onTouch() control
+                    Toast.makeText(mView.getContext(), R.string.customInfoWindowOnTouchMessage, Toast.LENGTH_SHORT).show();
+
+                    // Still close the InfoWindow though
+                    close();
+                }
+
+                OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
+                return true;
+            }
         });
     }
 
-    public void OnNavigateTextClick(View v) {
+    /*public void OnNavigateTextClick(View v) {
         Log.i("", "OnNavigateTextClick() called");
         OnNavigationLinkClicked(startLat, startLong, endLat, endLong);
-    }
+    }*/
 
     public void OnNavigationLinkClicked(Double startLatitude, Double startLongitude, Double endLatitude, Double endLongitude) {
+        Log.i(TAG, "OnNavigationLinkClicked() called");
         String accessToken = "pk.eyJ1IjoiYmxlZWdlIiwiYSI6IkRGLTFPU00ifQ.qJpq3jytAL9A-z_tkNypqg";
-        String urlToGetRoutes = "https://api.mapbox.com/v4/directions/mapbox.driving/" + startLatitude.toString() + "," + startLongitude.toString() + ";" +
+        String urlToGetRoutes = "http://api.mapbox.com/v4/directions/mapbox.driving/" + startLatitude.toString() + "," + startLongitude.toString() + ";" +
                 endLatitude.toString() + "," + endLongitude.toString() + ".json?access_token=" + accessToken;
 
         RouteOverlayer overlayer = new RouteOverlayer();
@@ -82,7 +101,7 @@ public class NavigationInfoWindow extends InfoWindow {
     private class RouteOverlayer extends AsyncTask<String, Void, JSONArray> {
         @Override
         protected JSONArray doInBackground(String... url) {
-            Log.i("", "doInBackground() called");
+            Log.i(TAG, "doInBackground() called");
             try {
                 JSONObject routesJsonObj = DataLoadingUtils.loadJSONFromUrl(url[0]);
                 JSONArray routesJsonArray = routesJsonObj.getJSONArray("routes");
@@ -94,7 +113,7 @@ public class NavigationInfoWindow extends InfoWindow {
 
         @Override
         protected void onPostExecute(JSONArray jsonRoutes) {
-            Log.i("", "onPostExecute() called");
+            Log.i(TAG, "onPostExecute() called");
             if (jsonRoutes == null) {
                 return;
             } else {
