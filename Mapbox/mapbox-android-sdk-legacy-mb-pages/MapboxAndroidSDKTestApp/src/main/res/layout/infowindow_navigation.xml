@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/navigation_container"
+        android:background="@color/white"
+        android:padding="5dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/navigation_title"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:text="Title"/>
+
+        <TextView
+            android:id="@+id/navigation_details"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textColor="@color/black"
+            android:textSize="10sp"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:text="Details"/>
+
+        <TextView
+            android:id="@+id/navigation_link"
+            android:onClick="OnNavigateTextClick"
+            android:layout_width="wrap_content"
+            android:layout_height="0dp"
+            android:textColor="@color/mapboxBlue"
+            android:textSize="10sp"
+            android:layout_gravity="start"
+            android:layout_weight="1"
+            android:text="Navigate here..."/>
+
+    </LinearLayout>
+
+</LinearLayout>
+

@@ -20,6 +20,8 @@ import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.util.constants.UtilConstants;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -63,6 +65,29 @@ public class DataLoadingUtils {
         }
 
         return parsed;
+    }
+
+    public static JSONObject loadJSONFromUrl(final String url) throws IOException, JSONException {
+        if (TextUtils.isEmpty(url)) {
+            throw new NullPointerException("No GeoJSON URL passed in.");
+        }
+
+        if (UtilConstants.DEBUGMODE) {
+            Log.d(DataLoadingUtils.class.getCanonicalName(), "Mapbox SDK downloading GeoJSON URL: " + url);
+        }
+
+        InputStream is;
+        if (url.toLowerCase(Locale.US).indexOf("http") == 0) {
+            is = NetworkUtils.getHttpURLConnection(new URL(url)).getInputStream();
+        } else {
+            is = new URL(url).openStream();
+        }
+        BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+        String jsonText = readAll(rd);
+
+        JSONObject newJsonObj = new JSONObject(jsonText);
+
+        return newJsonObj;
     }
 
     /**

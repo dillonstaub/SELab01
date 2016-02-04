@@ -1,6 +1,8 @@
 package com.mapbox.mapboxsdk.android.testapp;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -10,9 +12,13 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
+import com.cocoahero.android.geojson.FeatureCollection;
+import com.cocoahero.android.geojson.GeoJSON;
 import com.mapbox.mapboxsdk.android.testapp.ui.CustomInfoWindow;
+import com.mapbox.mapboxsdk.android.testapp.ui.NavigationInfoWindow;
 import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.overlay.Marker;
+import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.views.MapView;
 import com.mapbox.mapboxsdk.overlay.UserLocationOverlay;
 
@@ -25,13 +31,11 @@ import org.apache.http.HttpResponse;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.http.client.HttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.HttpEntity;
+import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 
 /**
  * Created by Will on 1/22/2016.
@@ -39,6 +43,7 @@ import org.apache.http.HttpEntity;
 
 public class NavigationFragment extends Fragment {
     private static final String TAG = "Navigation";
+    private static MapView currentMapView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -48,6 +53,7 @@ public class NavigationFragment extends Fragment {
         final LinearLayout addressBar = (LinearLayout) view.findViewById(R.id.navigationAddressBar);
         final EditText addressTextBox = (EditText) view.findViewById(R.id.navigation_address);
         final MapView mapView = (MapView) view.findViewById(R.id.navigationMapView);
+        currentMapView = mapView;
 
         navigationAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -84,14 +90,6 @@ public class NavigationFragment extends Fragment {
         mapView.setCenter(latAndLng);
         mapView.setZoom(16);
 
-        Marker marker = new Marker(location.getAddressLine(0), location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName() + "\nNavigate Here...", latAndLng);
-        //marker.setToolTip(new CustomInfoWindow(mapView));
-        mapView.addMarker(marker);
-
-        mapView.setUserLocationEnabled(true);
-        mapView.setUserLocationTrackingMode(UserLocationOverlay.TrackingMode.FOLLOW);
-        mapView.setUserLocationRequiredZoom(10);
-
         LatLng userLoc = mapView.getUserLocation();
 
         // On emulators, this will return null since there is no way to get the user location.
@@ -100,29 +98,21 @@ public class NavigationFragment extends Fragment {
             userLoc = new LatLng(39.131080, -84.517784);
         }
 
+
+        String title = location.getAddressLine(0);
+        String details = location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName();
+        Marker marker = new Marker(title, details, latAndLng);
+        marker.setToolTip(new NavigationInfoWindow(mapView, title, details,
+                latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude()));
+        mapView.addMarker(marker);
+
+        mapView.setUserLocationEnabled(true);
+        mapView.setUserLocationTrackingMode(UserLocationOverlay.TrackingMode.FOLLOW);
+        mapView.setUserLocationRequiredZoom(10);
+
         Marker userLocMarker = new Marker("Current Location", "", userLoc);
         mapView.addMarker(userLocMarker);
 
-        try {
-            HttpClient httpclient = new DefaultHttpClient(); // Create HTTP Client
-            HttpGet httpget = new HttpGet("https://api.mapbox.com/v4/directions/mapbox.driving/-122.42,37.78;-77.03,38.91.json?access_token=pk.eyJ1IjoiYmxlZWdlIiwiYSI6IkRGLTFPU00ifQ.qJpq3jytAL9A-z_tkNypqg"); // Set the action you want to do
-            HttpResponse response = httpclient.execute(httpget); // Executeit
-            HttpEntity entity = response.getEntity();
-            InputStream is = entity.getContent(); // Create an InputStream with the response
-            BufferedReader reader = new BufferedReader(new InputStreamReader(is, "iso-8859-1"), 8);
-            StringBuilder sb = new StringBuilder();
-            String line = null;
-            while ((line = reader.readLine()) != null) // Read line by line
-                sb.append(line + "\n");
-
-            String resString = sb.toString(); // Result is here
-
-
-
-            is.close();
-        } catch (Exception ex) {
-
-        }
 
     }
 
