@@ -95,7 +95,8 @@ public class NavigationInfoWindow extends InfoWindow {
                 endLatitude.toString() + "," + endLongitude.toString() + ".json?access_token=" + accessToken;
 
         RouteOverlayer overlayer = new RouteOverlayer();
-        overlayer.doInBackground(urlToGetRoutes);
+        overlayer.execute(urlToGetRoutes);
+        //overlayer.doInBackground(urlToGetRoutes);
     }
 
     private class RouteOverlayer extends AsyncTask<String, Void, JSONArray> {
@@ -109,6 +110,8 @@ public class NavigationInfoWindow extends InfoWindow {
             } catch (Exception ex) {
                 return null;
             }
+
+            /* thought... move the first few lines in onPostEx (the ones that parse the json) to here. */
         }
 
         @Override
