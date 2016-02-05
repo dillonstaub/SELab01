@@ -2,6 +2,7 @@ package com.mapbox.mapboxsdk.android.testapp.ui;
 
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
+import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -20,6 +21,7 @@ import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
 
+import com.mapbox.mapboxsdk.android.testapp.NavigationFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -29,20 +31,22 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class NavigationInfoWindow extends InfoWindow {
-    private static final String TAG = "Navigation";
+    private static final String TAG = "NavigationInfoWindow";
 
     private MapView mapView;
+    private NavigationFragment owningNavFragment;
     private Double startLat;
     private Double startLong;
     private Double endLat;
     private Double endLong;
 
-    public NavigationInfoWindow(MapView mv, String title, String details,
+    public NavigationInfoWindow(MapView mv, NavigationFragment owningFragment, String title, String details,
                                 final Double startLatitude, final Double startLongitude, final Double endLatitude, final Double endLongitude) {
         super(R.layout.infowindow_navigation, mv);
 
         // Assign our private members for later use
         mapView = mv;
+        owningNavFragment = owningFragment;
         startLat = startLatitude;
         startLong = startLongitude;
         endLat = endLatitude;
@@ -72,15 +76,8 @@ public class NavigationInfoWindow extends InfoWindow {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.i(TAG, "onTouch() called");
-                /*if (event.getAction() == MotionEvent.ACTION_UP) {
-                    // Demonstrate custom onTouch() control
-                    Toast.makeText(mView.getContext(), R.string.customInfoWindowOnTouchMessage, Toast.LENGTH_SHORT).show();
-
-                    // Still close the InfoWindow though
-                    close();
-                }*/
-
                 OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
+                close();
                 return true;
             }
         });
@@ -109,6 +106,7 @@ public class NavigationInfoWindow extends InfoWindow {
                 JSONObject routesJsonObj = DataLoadingUtils.loadJSONFromUrl(url[0]);
                 return routesJsonObj;
             } catch (Exception ex) {
+                Log.i(TAG, "Exception in doInBackground()");
                 Log.i(TAG, ex.getMessage());
                 return null;
             }
@@ -119,35 +117,29 @@ public class NavigationInfoWindow extends InfoWindow {
         @Override
         protected void onPostExecute(JSONObject jsonRoutes) {
             Log.i(TAG, "onPostExecute() called");
+
+            // Parse the JSON
             JSONArray jsonRoutesArray = null;
             try {
                 jsonRoutesArray = jsonRoutes.getJSONArray("routes");
             } catch (Exception ex) {
+                Log.i(TAG, "Exception in onPostExecute() (1)");
                 Log.i(TAG, ex.getMessage());
+                Toast.makeText(mView.getContext(), "Could not get routes.", Toast.LENGTH_SHORT).show();
                 return;
             }
 
             if (jsonRoutesArray == null) {
-                return;
+                Toast.makeText(mView.getContext(), "Could not get routes.", Toast.LENGTH_SHORT).show();
             } else {
                 try {
                     // Get the first json route (our primary route)
                     JSONObject firstRouteAsJson = jsonRoutesArray.getJSONObject(0);
                     LineString firstRouteAsLineString = (LineString) GeoJSON.parse(firstRouteAsJson.getJSONObject("geometry"));
-
-                    // Turn it into an array of LatLngs
-                    List<Position> firstRoutAsPositions = firstRouteAsLineString.getPositions();
-                    ArrayList<LatLng> firstRouteAsLatLngs = new ArrayList();
-                    for (int i = 0; i < firstRoutAsPositions.size(); i++) {
-                        firstRouteAsLatLngs.add(new LatLng(firstRoutAsPositions.get(i).getLatitude(), firstRoutAsPositions.get(i).getLongitude()));
-                    }
-
-                    // Overlay it as a path
-                    PathOverlay po = new PathOverlay();
-                    po.addPoints(firstRouteAsLatLngs);
-                    mapView.addOverlay(po);
+                    owningNavFragment.OverlayRouteFromGeoJsonLineString(firstRouteAsLineString);
 
                 } catch (Exception ex) {
+                    Log.i(TAG, "Exception in onPostExecute() (2)");
                     String exMessage = ex.getMessage();
                     Log.i(TAG, exMessage);
                 }

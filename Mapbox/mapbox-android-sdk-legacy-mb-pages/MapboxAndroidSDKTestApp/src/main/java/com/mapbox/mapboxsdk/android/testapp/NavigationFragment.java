@@ -14,6 +14,8 @@ import android.widget.LinearLayout;
 
 import com.cocoahero.android.geojson.FeatureCollection;
 import com.cocoahero.android.geojson.GeoJSON;
+import com.cocoahero.android.geojson.LineString;
+import com.cocoahero.android.geojson.Position;
 import com.mapbox.mapboxsdk.android.testapp.ui.CustomInfoWindow;
 import com.mapbox.mapboxsdk.android.testapp.ui.NavigationInfoWindow;
 import com.mapbox.mapboxsdk.geometry.LatLng;
@@ -25,8 +27,10 @@ import com.mapbox.mapboxsdk.overlay.UserLocationOverlay;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.widget.Toast;
 
 import org.apache.http.HttpResponse;
+import org.json.JSONObject;
 
 import java.io.BufferedReader;
 import java.io.InputStream;
@@ -43,26 +47,45 @@ import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 
 public class NavigationFragment extends Fragment {
     private static final String TAG = "Navigation";
-    private static MapView currentMapView;
+    private MapView currentMapView;
+    private View currentView;
+
+    public boolean skipSearchBar = false;
+    public LineString routeToDisplay = null;
+    public LatLng initialLatAndLng = null;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
+
 
         // Find all the UI elements
         Button navigationAddressButton = (Button) view.findViewById(R.id.navigation_address_button);
         final LinearLayout addressBar = (LinearLayout) view.findViewById(R.id.navigationAddressBar);
         final EditText addressTextBox = (EditText) view.findViewById(R.id.navigation_address);
         final MapView mapView = (MapView) view.findViewById(R.id.navigationMapView);
-        currentMapView = mapView;
 
-        // Set the listener for clicking "search"
-        navigationAddressButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                navigationSearchButton(v, addressBar, addressTextBox, mapView);
+        currentMapView = mapView;
+        currentView = view;
+
+        // Check if we should just go the map
+        if (skipSearchBar) {
+            // Set the screen to show the mapview
+            PrepUIToShowMap(initialLatAndLng, addressBar, mapView);
+
+            if (routeToDisplay != null) {
+                OverlayRouteFromGeoJsonLineString(routeToDisplay);
             }
-        });
+        } else {
+
+            // Set the listener for clicking "search"
+            navigationAddressButton.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    navigationSearchButton(v, addressBar, addressTextBox, mapView);
+                }
+            });
+        }
 
 
 
@@ -86,17 +109,12 @@ public class NavigationFragment extends Fragment {
         // If it's null, do nothing
         if (latAndLng == null)
         {
-            // TODO: Toast message
+            Toast.makeText(view.getContext(), "Could not find location.", Toast.LENGTH_SHORT).show();
             return;
         }
 
         // Update the UI visibility
-        navAddressBar.setVisibility(View.INVISIBLE);
-        mapView.setVisibility(View.VISIBLE);
-
-        // Orient the mapview
-        mapView.setCenter(latAndLng);
-        mapView.setZoom(16);
+        PrepUIToShowMap(latAndLng, navAddressBar, mapView);
 
         // Get the user location
         mapView.setUserLocationEnabled(true);
@@ -114,7 +132,7 @@ public class NavigationFragment extends Fragment {
         String title = location.getAddressLine(0);
         String details = location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName();
         Marker marker = new Marker(title, details, latAndLng);
-        marker.setToolTip(new NavigationInfoWindow(mapView, title, details,
+        marker.setToolTip(new NavigationInfoWindow(mapView, this, title, details,
                 latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude()));
         mapView.addMarker(marker);
 
@@ -125,7 +143,16 @@ public class NavigationFragment extends Fragment {
 
     }
 
-    public Address getAddressObjFromAddress(Context context, String strAddress) {
+    private void PrepUIToShowMap(LatLng initialLocation, LinearLayout navAddressBar, MapView mapView) {
+        navAddressBar.setVisibility(View.INVISIBLE);
+        mapView.setVisibility(View.VISIBLE);
+
+        // Orient the mapview
+        mapView.setCenter(initialLocation);
+        mapView.setZoom(16);
+    }
+
+    private Address getAddressObjFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
         Address location = null;
@@ -142,5 +169,30 @@ public class NavigationFragment extends Fragment {
         }
 
         return location;
+    }
+
+    public void OverlayRouteFromGeoJsonLineString(LineString  routeAsGeoJsonLineString) {
+        try {
+            // Get the first json route (our primary route)
+            //LineString firstRouteAsLineString = (LineString) GeoJSON.parse(new JSONObject(routeAsGeoJsonLineString));
+
+            // Turn it into an array of LatLngs
+            List<Position> routeAsPositions = routeAsGeoJsonLineString.getPositions();
+            ArrayList<LatLng> routeAsLatLngs = new ArrayList();
+            for (int i = 0; i < routeAsPositions.size(); i++) {
+                routeAsLatLngs.add(new LatLng(routeAsPositions.get(i).getLatitude(), routeAsPositions.get(i).getLongitude()));
+            }
+
+            // Overlay it as a path
+            PathOverlay po = new PathOverlay();
+            po.addPoints(routeAsLatLngs);
+            currentMapView.addOverlay(po);
+
+        } catch (Exception ex) {
+            String exMessage = ex.getMessage();
+            Log.i(TAG, "Exception in OverlayRouteFromGeoJsonLineString()");
+            Log.i(TAG, exMessage);
+            Toast.makeText(currentView.getContext(), "Could not overlay route.", Toast.LENGTH_SHORT).show();
+        }
     }
 }
