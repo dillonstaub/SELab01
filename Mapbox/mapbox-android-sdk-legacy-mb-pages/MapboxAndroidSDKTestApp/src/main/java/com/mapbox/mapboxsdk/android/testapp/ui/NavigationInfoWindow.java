@@ -41,12 +41,14 @@ public class NavigationInfoWindow extends InfoWindow {
                                 final Double startLatitude, final Double startLongitude, final Double endLatitude, final Double endLongitude) {
         super(R.layout.infowindow_navigation, mv);
 
+        // Assign our private members for later use
         mapView = mv;
         startLat = startLatitude;
         startLong = startLongitude;
         endLat = endLatitude;
         endLong = endLongitude;
 
+        // Find and update the UI
         TextView tvTitle = (TextView) mView.findViewById(R.id.navigation_title);
         TextView tvDetails = (TextView) mView.findViewById(R.id.navigation_details);
 
@@ -65,17 +67,18 @@ public class NavigationInfoWindow extends InfoWindow {
             }
         });*/
 
+        // Set the listener for clicking the marker
         setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 Log.i(TAG, "onTouch() called");
-                if (event.getAction() == MotionEvent.ACTION_UP) {
+                /*if (event.getAction() == MotionEvent.ACTION_UP) {
                     // Demonstrate custom onTouch() control
                     Toast.makeText(mView.getContext(), R.string.customInfoWindowOnTouchMessage, Toast.LENGTH_SHORT).show();
 
                     // Still close the InfoWindow though
                     close();
-                }
+                }*/
 
                 OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
                 return true;
@@ -83,31 +86,30 @@ public class NavigationInfoWindow extends InfoWindow {
         });
     }
 
-    /*public void OnNavigateTextClick(View v) {
-        Log.i("", "OnNavigateTextClick() called");
-        OnNavigationLinkClicked(startLat, startLong, endLat, endLong);
-    }*/
-
     public void OnNavigationLinkClicked(Double startLatitude, Double startLongitude, Double endLatitude, Double endLongitude) {
         Log.i(TAG, "OnNavigationLinkClicked() called");
-        String accessToken = "pk.eyJ1IjoiYmxlZWdlIiwiYSI6IkRGLTFPU00ifQ.qJpq3jytAL9A-z_tkNypqg";
-        String urlToGetRoutes = "http://api.mapbox.com/v4/directions/mapbox.driving/" + startLatitude.toString() + "," + startLongitude.toString() + ";" +
-                endLatitude.toString() + "," + endLongitude.toString() + ".json?access_token=" + accessToken;
 
+        // Build the url
+        String accessToken = "pk.eyJ1IjoiYmxlZWdlIiwiYSI6IkRGLTFPU00ifQ.qJpq3jytAL9A-z_tkNypqg";
+        String urlToGetRoutes = "http://api.mapbox.com/v4/directions/mapbox.driving/" + startLongitude.toString() + "," + startLatitude.toString() + ";" +
+                endLongitude.toString() + "," + endLatitude.toString() + ".json?access_token=" + accessToken;
+
+        // Create and start a new RouteOverlayer
         RouteOverlayer overlayer = new RouteOverlayer();
         overlayer.execute(urlToGetRoutes);
         //overlayer.doInBackground(urlToGetRoutes);
     }
 
-    private class RouteOverlayer extends AsyncTask<String, Void, JSONArray> {
+    private class RouteOverlayer extends AsyncTask<String, Void, JSONObject> {
         @Override
-        protected JSONArray doInBackground(String... url) {
+        protected JSONObject doInBackground(String... url) {
             Log.i(TAG, "doInBackground() called");
             try {
+                // Retrieve and parse the json
                 JSONObject routesJsonObj = DataLoadingUtils.loadJSONFromUrl(url[0]);
-                JSONArray routesJsonArray = routesJsonObj.getJSONArray("routes");
-                return routesJsonArray;
+                return routesJsonObj;
             } catch (Exception ex) {
+                Log.i(TAG, ex.getMessage());
                 return null;
             }
 
@@ -115,26 +117,39 @@ public class NavigationInfoWindow extends InfoWindow {
         }
 
         @Override
-        protected void onPostExecute(JSONArray jsonRoutes) {
+        protected void onPostExecute(JSONObject jsonRoutes) {
             Log.i(TAG, "onPostExecute() called");
-            if (jsonRoutes == null) {
+            JSONArray jsonRoutesArray = null;
+            try {
+                jsonRoutesArray = jsonRoutes.getJSONArray("routes");
+            } catch (Exception ex) {
+                Log.i(TAG, ex.getMessage());
+                return;
+            }
+
+            if (jsonRoutesArray == null) {
                 return;
             } else {
                 try {
-                    JSONObject firstRouteAsJson = jsonRoutes.getJSONObject(0);
-                    LineString firstRouteAsLineString = (LineString) GeoJSON.parse(firstRouteAsJson);
+                    // Get the first json route (our primary route)
+                    JSONObject firstRouteAsJson = jsonRoutesArray.getJSONObject(0);
+                    LineString firstRouteAsLineString = (LineString) GeoJSON.parse(firstRouteAsJson.getJSONObject("geometry"));
+
+                    // Turn it into an array of LatLngs
                     List<Position> firstRoutAsPositions = firstRouteAsLineString.getPositions();
                     ArrayList<LatLng> firstRouteAsLatLngs = new ArrayList();
-                    for (Position pos : firstRoutAsPositions) {
-                        firstRouteAsLatLngs.add(new LatLng(pos.getLatitude(), pos.getLongitude()));
+                    for (int i = 0; i < firstRoutAsPositions.size(); i++) {
+                        firstRouteAsLatLngs.add(new LatLng(firstRoutAsPositions.get(i).getLatitude(), firstRoutAsPositions.get(i).getLongitude()));
                     }
 
+                    // Overlay it as a path
                     PathOverlay po = new PathOverlay();
                     po.addPoints(firstRouteAsLatLngs);
                     mapView.addOverlay(po);
 
                 } catch (Exception ex) {
-
+                    String exMessage = ex.getMessage();
+                    Log.i(TAG, exMessage);
                 }
             }
         }

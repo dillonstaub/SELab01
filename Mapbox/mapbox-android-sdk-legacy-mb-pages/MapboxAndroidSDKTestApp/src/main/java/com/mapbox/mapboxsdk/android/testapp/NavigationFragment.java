@@ -49,12 +49,14 @@ public class NavigationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
 
+        // Find all the UI elements
         Button navigationAddressButton = (Button) view.findViewById(R.id.navigation_address_button);
         final LinearLayout addressBar = (LinearLayout) view.findViewById(R.id.navigationAddressBar);
         final EditText addressTextBox = (EditText) view.findViewById(R.id.navigation_address);
         final MapView mapView = (MapView) view.findViewById(R.id.navigationMapView);
         currentMapView = mapView;
 
+        // Set the listener for clicking "search"
         navigationAddressButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -70,10 +72,10 @@ public class NavigationFragment extends Fragment {
     public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
 
+        // Get the address and corresponding LatLng
         String address = addressTextBox.getText().toString();
         Address location = getAddressObjFromAddress(getActivity().getApplicationContext(), address);
         LatLng latAndLng = null;
-
         try {
             latAndLng = new LatLng(location.getLatitude(), location.getLongitude() );
         } catch (Exception ex) {
@@ -81,17 +83,25 @@ public class NavigationFragment extends Fragment {
             return;
         }
 
+        // If it's null, do nothing
         if (latAndLng == null)
         {
+            // TODO: Toast message
             return;
         }
 
+        // Update the UI visibility
         navAddressBar.setVisibility(View.INVISIBLE);
         mapView.setVisibility(View.VISIBLE);
 
+        // Orient the mapview
         mapView.setCenter(latAndLng);
         mapView.setZoom(16);
 
+        // Get the user location
+        mapView.setUserLocationEnabled(true);
+        mapView.setUserLocationTrackingMode(UserLocationOverlay.TrackingMode.FOLLOW);
+        mapView.setUserLocationRequiredZoom(10);
         LatLng userLoc = mapView.getUserLocation();
 
         // On emulators, this will return null since there is no way to get the user location.
@@ -100,7 +110,7 @@ public class NavigationFragment extends Fragment {
             userLoc = new LatLng(39.131080, -84.517784);
         }
 
-
+        // Create a new marker for the entered address
         String title = location.getAddressLine(0);
         String details = location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName();
         Marker marker = new Marker(title, details, latAndLng);
@@ -108,10 +118,7 @@ public class NavigationFragment extends Fragment {
                 latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude()));
         mapView.addMarker(marker);
 
-        mapView.setUserLocationEnabled(true);
-        mapView.setUserLocationTrackingMode(UserLocationOverlay.TrackingMode.FOLLOW);
-        mapView.setUserLocationRequiredZoom(10);
-
+        // Create a new marker for the current user location
         Marker userLocMarker = new Marker("Current Location", "", userLoc);
         mapView.addMarker(userLocMarker);
 
