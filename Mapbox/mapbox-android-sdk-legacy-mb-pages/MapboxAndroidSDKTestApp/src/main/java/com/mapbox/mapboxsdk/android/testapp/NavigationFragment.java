@@ -70,6 +70,11 @@ public class NavigationFragment extends Fragment {
 
         // Check if we should just go the map
         if (skipSearchBar) {
+            if (initialLatAndLng == null) {
+                // Set to default (UC's campus)
+                initialLatAndLng = new LatLng(39.131080, -84.517784);
+            }
+
             // Set the screen to show the mapview
             PrepUIToShowMap(initialLatAndLng, addressBar, mapView);
 
@@ -132,7 +137,7 @@ public class NavigationFragment extends Fragment {
         String title = location.getAddressLine(0);
         String details = location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName();
         Marker marker = new Marker(title, details, latAndLng);
-        marker.setToolTip(new NavigationInfoWindow(mapView, this, title, details,
+        marker.setToolTip(new NavigationInfoWindow(mapView, this, getFragmentManager(), title, details,
                 latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude()));
         mapView.addMarker(marker);
 
@@ -151,6 +156,8 @@ public class NavigationFragment extends Fragment {
         mapView.setCenter(initialLocation);
         mapView.setZoom(16);
     }
+
+    //private void DisplayMarkers
 
     private Address getAddressObjFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);

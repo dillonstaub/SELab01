@@ -1,5 +1,7 @@
 package com.mapbox.mapboxsdk.android.testapp.ui;
 
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
@@ -22,6 +24,7 @@ import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
 
 import com.mapbox.mapboxsdk.android.testapp.NavigationFragment;
+import com.mapbox.mapboxsdk.android.testapp.NavigationRoutesFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -35,18 +38,20 @@ public class NavigationInfoWindow extends InfoWindow {
 
     private MapView mapView;
     private NavigationFragment owningNavFragment;
+    private FragmentManager fragManager;
     private Double startLat;
     private Double startLong;
     private Double endLat;
     private Double endLong;
 
-    public NavigationInfoWindow(MapView mv, NavigationFragment owningFragment, String title, String details,
+    public NavigationInfoWindow(MapView mv, NavigationFragment owningFragment, FragmentManager fragmentManager, String title, String details,
                                 final Double startLatitude, final Double startLongitude, final Double endLatitude, final Double endLongitude) {
         super(R.layout.infowindow_navigation, mv);
 
         // Assign our private members for later use
         mapView = mv;
         owningNavFragment = owningFragment;
+        fragManager = fragmentManager;
         startLat = startLatitude;
         startLong = startLongitude;
         endLat = endLatitude;
@@ -62,14 +67,6 @@ public class NavigationInfoWindow extends InfoWindow {
         TextView link = (TextView) mView.findViewById(R.id.navigation_link);
         LinearLayout container = (LinearLayout) mView.findViewById(R.id.navigation_container);
 
-        /*link.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("", "onClick() called");
-                OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
-                return;
-            }
-        });*/
 
         // Set the listener for clicking the marker
         setOnTouchListener(new View.OnTouchListener() {
@@ -129,14 +126,26 @@ public class NavigationInfoWindow extends InfoWindow {
                 return;
             }
 
-            if (jsonRoutesArray == null) {
+            if (jsonRoutesArray == null || jsonRoutesArray.length() == 0) {
                 Toast.makeText(mView.getContext(), "Could not get routes.", Toast.LENGTH_SHORT).show();
             } else {
                 try {
-                    // Get the first json route (our primary route)
-                    JSONObject firstRouteAsJson = jsonRoutesArray.getJSONObject(0);
-                    LineString firstRouteAsLineString = (LineString) GeoJSON.parse(firstRouteAsJson.getJSONObject("geometry"));
-                    owningNavFragment.OverlayRouteFromGeoJsonLineString(firstRouteAsLineString);
+                    if (jsonRoutesArray.length() == 1) {
+                        // Get the first json route (our primary route)
+                        JSONObject firstRouteAsJson = jsonRoutesArray.getJSONObject(0);
+                        LineString firstRouteAsLineString = (LineString) GeoJSON.parse(firstRouteAsJson.getJSONObject("geometry"));
+                        owningNavFragment.OverlayRouteFromGeoJsonLineString(firstRouteAsLineString);
+                    } else {
+                        // Create the new navigation routes fragment and give it the navigation fragment
+                        NavigationRoutesFragment newNavRoutesFrag = NavigationRoutesFragment.createInstance(jsonRoutesArray.toString());// new NavigationRoutesFragment();
+                        newNavRoutesFrag.navFragment = owningNavFragment;
+                        //newNavRoutesFrag.jsonRoutesArray = jsonRoutesArray;
+
+                        FragmentTransaction transaction = fragManager.beginTransaction();
+                        transaction.replace(R.id.content_frame, newNavRoutesFrag);
+                        transaction.addToBackStack(null);
+                        transaction.commit();
+                    }
 
                 } catch (Exception ex) {
                     Log.i(TAG, "Exception in onPostExecute() (2)");
