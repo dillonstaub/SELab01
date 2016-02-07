@@ -60,7 +60,7 @@ public class NavigationRoutesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigationroutes, container, false);
 
-        navFragment = (NavigationFragment) getFragmentManager().findFragmentByTag(getString(R.string.navigation));
+        navFragment = (NavigationFragment) getFragmentManager().findFragmentByTag(getString(R.string.navigationFragmentTag));
         try {
             //JSONObject obj = new JSONObject(getArguments().getString(ROUTES_PARAM));
             jsonRoutesArray = new JSONArray(getArguments().getString(ROUTES_PARAM));//obj.getJSONArray("routes");
@@ -94,6 +94,7 @@ public class NavigationRoutesFragment extends Fragment {
 
     private void SwitchToNavigationFragment(LineString routeToDisplay) {
         navFragment.routeToDisplay = routeToDisplay;
+        navFragment.skipSearchBar = true;
         getFragmentManager().popBackStackImmediate();
     }
 
@@ -121,7 +122,9 @@ public class NavigationRoutesFragment extends Fragment {
                 @Override
                 public void onClick(View v) {
                     try {
-                        SwitchToNavigationFragment((LineString) GeoJSON.parse(thisRoute.getJSONObject("geometry")));
+                        JSONObject tempGeo = thisRoute.getJSONObject("geometry");
+                        LineString tempLS = (LineString) GeoJSON.parse(tempGeo);
+                        SwitchToNavigationFragment(tempLS);
                     } catch (Exception ex) {
                         Log.i(TAG, "Error in onClick for item in pos " + position + " in NavRouteFrag.");
                         Log.i(TAG, ex.getMessage());

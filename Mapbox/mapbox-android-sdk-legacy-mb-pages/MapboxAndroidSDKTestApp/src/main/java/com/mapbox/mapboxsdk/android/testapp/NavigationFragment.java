@@ -46,6 +46,12 @@ import com.mapbox.mapboxsdk.util.DataLoadingUtils;
  */
 
 public class NavigationFragment extends Fragment {
+    /*  TODO:
+        Figure out why you need to hit search twice.
+        Fix the custom marker layout after you've overlayed a map.
+        Test!
+     */
+
     private static final String TAG = "Navigation";
     private MapView currentMapView;
     private View currentView;
@@ -53,6 +59,10 @@ public class NavigationFragment extends Fragment {
     public boolean skipSearchBar = false;
     public LineString routeToDisplay = null;
     public LatLng initialLatAndLng = null;
+
+    private Marker cachedSearchedAddressMarker;
+    private Marker cachedCurrentLocationMarker;
+    private NavigationInfoWindow cachedMarkerStyle;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -77,6 +87,18 @@ public class NavigationFragment extends Fragment {
 
             // Set the screen to show the mapview
             PrepUIToShowMap(initialLatAndLng, addressBar, mapView);
+
+            // Add cached markers
+            if (cachedSearchedAddressMarker != null) {
+                if (cachedMarkerStyle != null) {
+                    cachedSearchedAddressMarker.setToolTip(cachedMarkerStyle);
+                }
+                mapView.addMarker(cachedSearchedAddressMarker);
+            }
+
+            if (cachedCurrentLocationMarker != null) {
+                mapView.addMarker(cachedCurrentLocationMarker);
+            }
 
             if (routeToDisplay != null) {
                 OverlayRouteFromGeoJsonLineString(routeToDisplay);
@@ -137,15 +159,18 @@ public class NavigationFragment extends Fragment {
         String title = location.getAddressLine(0);
         String details = location.getLocality() + ", " + location.getAdminArea() + ", " + location.getCountryName();
         Marker marker = new Marker(title, details, latAndLng);
-        marker.setToolTip(new NavigationInfoWindow(mapView, this, getFragmentManager(), title, details,
-                latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude()));
+        NavigationInfoWindow navInfoWindow = new NavigationInfoWindow(mapView, this, getFragmentManager(), title, details,
+                latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude());
+        marker.setToolTip(navInfoWindow);
         mapView.addMarker(marker);
 
         // Create a new marker for the current user location
         Marker userLocMarker = new Marker("Current Location", "", userLoc);
         mapView.addMarker(userLocMarker);
 
-
+        cachedCurrentLocationMarker = userLocMarker;
+        cachedSearchedAddressMarker = marker;
+        cachedMarkerStyle = navInfoWindow;
     }
 
     private void PrepUIToShowMap(LatLng initialLocation, LinearLayout navAddressBar, MapView mapView) {

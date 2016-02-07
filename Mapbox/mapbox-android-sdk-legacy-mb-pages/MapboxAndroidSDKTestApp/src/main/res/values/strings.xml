@@ -41,5 +41,6 @@
     <string name="customInfoWindowOnTouchMessage">Hey, I just customized the CustomInfoWindows\'s onTouchListener()!</string>
     <string name="navigationdrawer_open">open</string>
     <string name="navigationdrawer_close">close</string>
+    <string name="navigationFragmentTag">Navigation Fragment Tag</string>
 
 </resources>

@@ -97,9 +97,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// Create a new fragment and specify the planet to show based on position
 		Fragment fragment;
 
+		String fragmentTag = null;
+
 		switch (position) {
 			case 0:
 				fragment = new NavigationFragment();
+				fragmentTag = getString(R.string.navigationFragmentTag);
 				break;
 			case 1:
 				fragment = new MainTestFragment();
@@ -169,7 +172,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// Insert the fragment by replacing any existing fragment
 		FragmentManager fragmentManager = getSupportFragmentManager();
 		fragmentManager.beginTransaction()
-				.replace(R.id.content_frame, fragment)
+				.replace(R.id.content_frame, fragment, fragmentTag)
 				.commit();
 
 		mDrawerLayout.closeDrawer(mNavigationView);

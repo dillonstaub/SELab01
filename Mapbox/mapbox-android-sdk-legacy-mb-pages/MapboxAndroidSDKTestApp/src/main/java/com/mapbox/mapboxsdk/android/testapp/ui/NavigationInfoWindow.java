@@ -138,7 +138,7 @@ public class NavigationInfoWindow extends InfoWindow {
                     } else {
                         // Create the new navigation routes fragment and give it the navigation fragment
                         NavigationRoutesFragment newNavRoutesFrag = NavigationRoutesFragment.createInstance(jsonRoutesArray.toString());// new NavigationRoutesFragment();
-                        newNavRoutesFrag.navFragment = owningNavFragment;
+                        //newNavRoutesFrag.navFragment = owningNavFragment;
                         //newNavRoutesFrag.jsonRoutesArray = jsonRoutesArray;
 
                         FragmentTransaction transaction = fragManager.beginTransaction();

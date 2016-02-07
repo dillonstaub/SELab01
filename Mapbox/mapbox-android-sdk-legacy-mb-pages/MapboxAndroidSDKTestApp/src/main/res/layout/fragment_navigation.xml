@@ -37,12 +37,4 @@
         mapbox:mapid="@string/mapbox_id_satellite"
         mapbox:accessToken="@string/testAccessToken"/>
 
-    <!--EditText
-        android:hint="Input address"
-        android:inputType="textPostalAddress"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:background="@color/mapboxBlue"/-->
-
 </RelativeLayout>
