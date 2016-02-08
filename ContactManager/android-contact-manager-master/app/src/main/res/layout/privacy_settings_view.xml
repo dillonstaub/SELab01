@@ -2,13 +2,14 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent" android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".MainActivity"
+    style="@android:style/Theme.Dialog">
 
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_gravity="left|top">
+        android:layout_gravity="top">
 
         <LinearLayout
             android:orientation="horizontal"
@@ -112,6 +113,13 @@
                 android:layout_weight="1" />
 
         </LinearLayout>
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/hide_privacy_settings_button_text"
+            android:id="@+id/hideButton"
+            android:layout_gravity="center_horizontal" />
 
     </LinearLayout>
 </FrameLayout>

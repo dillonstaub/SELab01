@@ -14,5 +14,6 @@
     <string name="user_email">Email</string>
     <string name="user_address">Address</string>
     <string name="title_activity_main2">Main2Activity</string>
+    <string name="hide_privacy_settings_button_text">Hide dialog</string>
 
 </resources>

@@ -1,9 +1,10 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity"
-    android:orientation="vertical">
+<merge xmlns:android="http://schemas.android.com/apk/res/android">
+    <LinearLayout
+            android:layout_width="match_parent"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:layout_height="match_parent"
+            tools:context=".MainActivity"
+            android:orientation="vertical">
 
 
     <TabHost
@@ -123,3 +124,28 @@
     </TabHost>
 
 </LinearLayout>
+
+<FrameLayout
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="center"
+    android:visibility="gone"
+    android:id="@+id/privacy_options"
+    android:clickable="false"
+    android:background="#e0d4d8">
+
+<ViewAnimator
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:id="@+id/viewAnimator"
+    android:visibility="visible"
+    style="@android:style/Animation.Dialog">
+
+    <include
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        layout="@layout/privacy_settings_view" />
+</ViewAnimator>
+</FrameLayout>
+
+</merge>

@@ -48,26 +48,28 @@ public class SettingsActivity extends Activity {
 
         //setupActionBar();
     }
-    public void boxToggled(View v){
-        CheckBox checkBox = (CheckBox)v;
-        SharedPreferences pref_thing = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
-        SharedPreferences.Editor editor_thing = pref_thing.edit();
-        Toast.makeText(this,"got in", Toast.LENGTH_LONG).show();
-        if(v.getId() == R.id.checkBox){
-            editor_thing.putBoolean("phone", checkBox.isChecked());
-            Toast.makeText(this,"got in1", Toast.LENGTH_LONG).show();
-        }
-        if(v.getId() == R.id.checkBox2) {
-            editor_thing.putBoolean("email", checkBox.isChecked());
-            Toast.makeText(this,"got in2", Toast.LENGTH_LONG).show();
-        }
-        if(v.getId() == R.id.checkBox3) {
-            editor_thing.putBoolean("address", checkBox.isChecked());
-            Toast.makeText(this,"got in3", Toast.LENGTH_LONG).show();
-        }
-        editor_thing.apply();
-
-    }
+//    public void boxToggled(View v){
+//        CheckBox checkBox = (CheckBox)v;
+//        SharedPreferences pref_thing = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+//        SharedPreferences.Editor editor_thing = pref_thing.edit();
+//        editor_thing.clear();
+//        editor_thing.apply();
+//        Toast.makeText(this,"got in", Toast.LENGTH_LONG).show();
+//        if(v.getId() == R.id.checkBox){
+//            editor_thing.putBoolean("phone", checkBox.isChecked());
+//            Toast.makeText(this,"got in1", Toast.LENGTH_LONG).show();
+//        }
+//        if(v.getId() == R.id.checkBox2) {
+//            editor_thing.putBoolean("email", checkBox.isChecked());
+//            Toast.makeText(this,"got in2", Toast.LENGTH_LONG).show();
+//        }
+//        if(v.getId() == R.id.checkBox3) {
+//            editor_thing.putBoolean("address", checkBox.isChecked());
+//            Toast.makeText(this,"got in3 " + checkBox.isChecked(), Toast.LENGTH_LONG).show();
+//        }
+//        editor_thing.commit();
+//
+//    }
 //    /**
 //     * Set up the {@link android.app.ActionBar}, if the API is available.
 //     */

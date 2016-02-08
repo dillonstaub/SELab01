@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.ListView;
@@ -39,6 +40,8 @@ public class MainActivity extends Activity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+        pref_thing = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        editor_thing = pref_thing.edit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -62,6 +65,30 @@ public class MainActivity extends Activity {
         tabSpec.setContent(R.id.tabContactList);
         tabSpec.setIndicator("List");
         tabHost.addTab(tabSpec);
+
+        /*
+        Listener for the button that hides the privacy settings dialog when the user is done with
+        it. Calls populateList() to update the app's state with the new settings.
+        */
+        final Button hideBtn = (Button) findViewById(R.id.hideButton);
+        hideBtn.setOnClickListener(new View.OnClickListener(){
+            @Override
+            public void onClick(View view) {
+                populateList();
+                View v = findViewById(R.id.privacy_options);
+                v.setVisibility(View.GONE);
+                v.setClickable(false);
+            }
+        });
+
+        //Set the state of the checkboxes to what is indicated in the preferences.
+        CheckBox checkbox1 = (CheckBox)findViewById(R.id.checkBox);
+        CheckBox checkbox2 = (CheckBox)findViewById(R.id.checkBox2);
+        CheckBox checkbox3 = (CheckBox)findViewById(R.id.checkBox3);
+
+        checkbox1.setChecked(pref_thing.getBoolean("phone",false));
+        checkbox2.setChecked(pref_thing.getBoolean("email",false));
+        checkbox3.setChecked(pref_thing.getBoolean("address",false));
 
 
         final Button addBtn = (Button) findViewById(R.id.btnAdd);
@@ -131,8 +158,9 @@ public class MainActivity extends Activity {
         //criar função para retornar o emelento do array
         @Override
         public View getView(int position, View view, ViewGroup parent){
-            if (view == null)
+            if (view == null) {
                 view = getLayoutInflater().inflate(R.layout.listview_item, parent, false);
+            }
 
             Contact currentContact = Contacts.get(position);
 
@@ -144,7 +172,7 @@ public class MainActivity extends Activity {
             email.setText(currentContact.get_email());
 
             TextView address = null;
-            SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
+            //SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
             boolean use_hyperlinks = (!pref_thing.getBoolean("address",false));
             if(use_hyperlinks) {
                 address = (TextView) view.findViewById(R.id.cAddress);
@@ -182,8 +210,12 @@ public class MainActivity extends Activity {
         if (id == R.id.action_settings) {
             //int x = 9 / 0;
            // this.fragment
-            this.startActivity(new Intent(this, SettingsActivity.class));
+            //this.startActivity(new Intent(this, SettingsActivity.class));
             //setContentView(R.layout.privacy_settings_view);
+            View v = findViewById(R.id.privacy_options);
+            v.setVisibility(View.VISIBLE);
+            v.setClickable(true);
+
             return true;
         }
 
@@ -191,4 +223,33 @@ public class MainActivity extends Activity {
     }
 
 
+    public void boxToggled(View v){
+        CheckBox checkBox = (CheckBox)v;
+        //SharedPreferences pref_thing = getApplicationContext().getSharedPreferences("MyPref", MODE_PRIVATE);
+        //SharedPreferences.Editor editor_thing = pref_thing.edit();
+//        editor_thing.clear();
+//        editor_thing.commit();
+        //Toast.makeText(this,"got in", Toast.LENGTH_LONG).show();
+        if(v.getId() == R.id.checkBox){
+            editor_thing.putBoolean("phone", checkBox.isChecked());
+            //Toast.makeText(this,"got in1", Toast.LENGTH_LONG).show();
+        }
+        if(v.getId() == R.id.checkBox2) {
+            editor_thing.putBoolean("email", checkBox.isChecked());
+            //Toast.makeText(this,"got in2", Toast.LENGTH_LONG).show();
+        }
+        if(v.getId() == R.id.checkBox3) {
+            editor_thing.putBoolean("address", checkBox.isChecked());
+            //Toast.makeText(this,"got in3 " + checkBox.isChecked(), Toast.LENGTH_LONG).show();
+        }
+        editor_thing.commit();
+
+    }
+
+    public void clickedOnHide(View v){
+
+    }
+
+    private SharedPreferences pref_thing = null;
+    private SharedPreferences.Editor editor_thing = null;
 }
