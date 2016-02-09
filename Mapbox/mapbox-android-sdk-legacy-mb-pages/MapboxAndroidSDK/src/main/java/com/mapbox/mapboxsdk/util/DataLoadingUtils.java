@@ -67,6 +67,9 @@ public class DataLoadingUtils {
         return parsed;
     }
 
+    /*
+        Adapted from the above function in coordination with John Mikolay.
+     */
     public static JSONObject loadJSONFromUrl(final String url) throws IOException, JSONException {
         if (TextUtils.isEmpty(url)) {
             throw new NullPointerException("No GeoJSON URL passed in.");

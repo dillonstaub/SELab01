@@ -8,6 +8,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -122,6 +123,10 @@ public class NavigationFragment extends Fragment {
     public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
 
+        // Close the keyboard
+        InputMethodManager imm  = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
+
         // Get the address and corresponding LatLng
         String address = addressTextBox.getText().toString();
         Address location = getAddressObjFromAddress(getActivity().getApplicationContext(), address);
@@ -184,6 +189,9 @@ public class NavigationFragment extends Fragment {
 
     //private void DisplayMarkers
 
+    /*
+        Function adapted from code from stackoverflow.com.
+    */
     private Address getAddressObjFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
@@ -203,6 +211,9 @@ public class NavigationFragment extends Fragment {
         return location;
     }
 
+    /*
+        Function adapted from code by John Mikolay and code from stackoverflow.com.
+    */
     public void OverlayRouteFromGeoJsonLineString(LineString  routeAsGeoJsonLineString) {
         try {
             // Get the first json route (our primary route)

@@ -1,8 +1,6 @@
 package com.mapbox.mapboxsdk.android.testapp;
 
 import android.content.Context;
-import android.location.Address;
-import android.location.Geocoder;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
@@ -12,19 +10,10 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.cocoahero.android.geojson.GeoJSON;
 import com.cocoahero.android.geojson.LineString;
-import com.mapbox.mapboxsdk.android.testapp.ui.NavigationInfoWindow;
-import com.mapbox.mapboxsdk.geometry.LatLng;
-import com.mapbox.mapboxsdk.overlay.Marker;
-import com.mapbox.mapboxsdk.overlay.UserLocationOverlay;
-import com.mapbox.mapboxsdk.views.MapView;
-
-import com.mapbox.mapboxsdk.android.testapp.NavigationFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
@@ -53,7 +42,6 @@ public class NavigationRoutesFragment extends Fragment {
     public NavigationFragment navFragment;
     public JSONArray jsonRoutesArray;
 
-    //private ArrayList<LineString> routesAsLineStrings;
     private ArrayList<JSONObject> routesAsJsonObjects;
 
     @Override
@@ -74,8 +62,6 @@ public class NavigationRoutesFragment extends Fragment {
         for (int ii = 0; ii < jsonRoutesArray.length(); ii++) {
             try {
                 routesAsJsonObjects.add(jsonRoutesArray.getJSONObject(ii));
-                //JSONObject routeAsJson = jsonRoutesArray.getJSONObject(ii);
-                //routesAsLineStrings.add((LineString) GeoJSON.parse(routeAsJson.getJSONObject("geometry")));
             } catch (Exception ex) {
                 String exMessage = ex.getMessage();
                 Log.i(TAG, "Exception in onCreateView() for NavigatinRoutesFragment, iteration " + ii);
@@ -96,8 +82,12 @@ public class NavigationRoutesFragment extends Fragment {
         navFragment.routeToDisplay = routeToDisplay;
         navFragment.skipSearchBar = true;
         getFragmentManager().popBackStackImmediate();
+        getFragmentManager().popBackStackImmediate();
     }
 
+    /*
+        Class adapted from code by John Mikolay and code from stackoverflow.com.
+    */
     private class RoutesListAdapter extends ArrayAdapter<JSONObject> {
         private int resource;
         private RoutesListAdapter(Context context, int resource, List<JSONObject> objects) {
