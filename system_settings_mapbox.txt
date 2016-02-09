@@ -1,6 +1,8 @@
 Emulator:
 Nexus 5 API 23 x86
 Marshmallow - Target: Android 6.0 (with Google APIs)
+Target: Google APIs (Google, Inc) - API Level 23
+CPU/ABI: Googl APIs Intel Atom (x86)
 
 Android Studio:
 Compile SDK Version: API 22: Android 5.1 (Lollipop)
