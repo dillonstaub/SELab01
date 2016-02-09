@@ -134,6 +134,7 @@ public class NavigationFragment extends Fragment {
         try {
             latAndLng = new LatLng(location.getLatitude(), location.getLongitude() );
         } catch (Exception ex) {
+            Toast.makeText(view.getContext(), "Could not find location.", Toast.LENGTH_SHORT).show();
             ex.printStackTrace();
             return;
         }
