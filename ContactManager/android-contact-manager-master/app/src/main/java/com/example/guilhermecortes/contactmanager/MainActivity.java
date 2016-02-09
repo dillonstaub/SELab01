@@ -173,7 +173,7 @@ public class MainActivity extends Activity {
 
             TextView address = null;
             //SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
-            boolean use_hyperlinks = (!pref_thing.getBoolean("address",false));
+            boolean use_hyperlinks = (pref_thing.getBoolean("address",false));
             if(use_hyperlinks) {
                 address = (TextView) view.findViewById(R.id.cAddress);
                 address.setText(Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> "));
