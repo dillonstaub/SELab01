@@ -24,11 +24,15 @@ public class ShareActivity extends Activity {
         if(Intent.ACTION_SEND.equals(action) && type != null){
             //Whether Intent type is 'text/plain'
             if(type.equals("text/plain")){
+
                 //Get message from Intent
-                String message = intent.getStringExtra(Intent.EXTRA_TEXT);
+                String name = intent.getStringExtra("Contact_Name");
+                String address = intent.getStringExtra("Contact_Address");
+                String number = intent.getStringExtra("Contact_Number");
                 //Display message
                 TextView textView = (TextView) findViewById(R.id.contactName);
-                textView.setText(message);
+                textView.setText(name);
+
             }
         }
     }

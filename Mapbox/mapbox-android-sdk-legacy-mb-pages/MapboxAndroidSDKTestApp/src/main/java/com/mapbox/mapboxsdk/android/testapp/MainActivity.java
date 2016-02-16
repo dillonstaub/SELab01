@@ -1,5 +1,6 @@
 package com.mapbox.mapboxsdk.android.testapp;
 
+import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -12,6 +13,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.EditText;
+import android.widget.TextView;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -197,5 +201,29 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		} else {
 			super.onBackPressed();
 		}
+	}
+
+	public void addToContact(View view){
+		//Set intent action as ACTION_SEND
+		Intent intent = new Intent(Intent.ACTION_SEND);
+		String title  = "Add to";
+
+		//Set intent type to text/plain
+		intent.setType("text/plain");
+
+		//Add extra strings to be sent to Contact Manager.
+		TextView textName = (TextView)findViewById(R.id.addToContact_placeName);
+		String name  = textName.getText().toString();
+		TextView textAddress = (TextView)findViewById(R.id.addToContact_address);
+		String address = textAddress.getText().toString();
+		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumber);
+		String number = textNumber.getText().toString();
+
+		intent.putExtra("Contact_Name", name);
+		intent.putExtra("Contact_Address", address);
+		intent.putExtra("Contact_Number", number);
+
+		//Start intent
+		startActivity(intent);
 	}
 }
