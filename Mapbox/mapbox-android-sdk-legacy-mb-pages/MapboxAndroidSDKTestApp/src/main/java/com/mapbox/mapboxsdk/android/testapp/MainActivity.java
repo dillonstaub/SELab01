@@ -97,6 +97,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// Create a new fragment and specify the planet to show based on position
 		Fragment fragment;
 
+		// Give the fragments a tag. We need this to identify the NavigationFragment later.
 		String fragmentTag = null;
 
 		switch (position) {

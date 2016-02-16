@@ -1,0 +1,14 @@
+Emulator:
+Nexus 5 API 23 x86
+Marshmallow - Target: Android 6.0 (with Google APIs)
+Target: Google APIs (Google, Inc) - API Level 23
+CPU/ABI: Googl APIs Intel Atom (x86)
+
+Android Studio:
+Compile SDK Version: API 22: Android 5.1 (Lollipop)
+Build Tools Version: 22.0.1
+Source / Target Compatibility: 1.7
+JDK Version: 1.7.25
+
+Note: There appears to be an issue on some of the lab machines with the Geocoder. The method getAddressObjFromAddress() in NavigationFragment.java works on some lab computers, and fails on some lab computers. This is assumed
+to be due to differences in the emulators and Android SDK versions; we were not able to determine the specific root cause.

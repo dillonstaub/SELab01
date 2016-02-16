@@ -3,8 +3,6 @@ package com.mapbox.mapboxsdk.android.testapp.ui;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
 import android.os.AsyncTask;
-import android.provider.ContactsContract;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
@@ -13,12 +11,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.cocoahero.android.geojson.GeoJSON;
-import com.cocoahero.android.geojson.Position;
 import com.cocoahero.android.geojson.LineString;
-import com.mapbox.mapboxsdk.geometry.LatLng;
 import com.mapbox.mapboxsdk.android.testapp.R;
 import com.mapbox.mapboxsdk.overlay.Marker;
-import com.mapbox.mapboxsdk.overlay.PathOverlay;
 import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 import com.mapbox.mapboxsdk.views.InfoWindow;
 import com.mapbox.mapboxsdk.views.MapView;
@@ -28,10 +23,6 @@ import com.mapbox.mapboxsdk.android.testapp.NavigationRoutesFragment;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class NavigationInfoWindow extends InfoWindow {
     private static final String TAG = "NavigationInfoWindow";
@@ -44,7 +35,7 @@ public class NavigationInfoWindow extends InfoWindow {
     private Double endLat;
     private Double endLong;
 
-    public NavigationInfoWindow(MapView mv, NavigationFragment owningFragment, FragmentManager fragmentManager, String title, String details,
+    public NavigationInfoWindow(MapView mv, final NavigationFragment owningFragment, FragmentManager fragmentManager, String title, String details,
                                 final Double startLatitude, final Double startLongitude, final Double endLatitude, final Double endLongitude) {
         super(R.layout.infowindow_navigation, mv);
 
@@ -65,15 +56,26 @@ public class NavigationInfoWindow extends InfoWindow {
         tvDetails.setText(details);
 
         TextView link = (TextView) mView.findViewById(R.id.navigation_link);
+        TextView addToContactLink = (TextView) mView.findViewById(R.id.navigation_addToContact);
         LinearLayout container = (LinearLayout) mView.findViewById(R.id.navigation_container);
 
 
         // Set the listener for clicking the marker
-        setOnTouchListener(new View.OnTouchListener() {
+        link.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.i(TAG, "onTouch() called");
+                Log.i(TAG, "onTouchForLink() called");
                 OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
+                close();
+                return true;
+            }
+        });
+
+        addToContactLink.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i(TAG, "onTouchForAddToContactLink() called");
+                owningNavFragment.moveToAddToContactFragment();
                 close();
                 return true;
             }
@@ -93,7 +95,9 @@ public class NavigationInfoWindow extends InfoWindow {
         overlayer.execute(urlToGetRoutes);
         //overlayer.doInBackground(urlToGetRoutes);
     }
-
+    /*
+        Class adapted from code by John Mikolay and code from stackoverflow.com.
+    */
     private class RouteOverlayer extends AsyncTask<String, Void, JSONObject> {
         @Override
         protected JSONObject doInBackground(String... url) {
@@ -162,7 +166,5 @@ public class NavigationInfoWindow extends InfoWindow {
      */
     @Override
     public void onOpen(Marker overlayItem) {
-        //String title = overlayItem.getTitle();
-        //((TextView) mView.findViewById(R.id.customTooltip_title)).setText(title);
     }
 }

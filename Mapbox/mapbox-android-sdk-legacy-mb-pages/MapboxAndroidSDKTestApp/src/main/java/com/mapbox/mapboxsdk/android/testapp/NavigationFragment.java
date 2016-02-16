@@ -4,10 +4,12 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -119,8 +121,24 @@ public class NavigationFragment extends Fragment {
         return view;
     }
 
+    public void moveToAddToContactFragment() {
+        AddToContactFragment newFrag = new AddToContactFragment();
+        newFrag.placeName = "Test";
+        newFrag.address = "123 Rainbow St.";
+        newFrag.phoneNumber = "+1 234 567 8910";
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, newFrag);
+        transaction.addToBackStack(null);
+        transaction.commit();
+    }
+
     public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
+
+        // Close the keyboard
+        InputMethodManager imm  = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+        imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         // Get the address and corresponding LatLng
         String address = addressTextBox.getText().toString();
@@ -129,6 +147,7 @@ public class NavigationFragment extends Fragment {
         try {
             latAndLng = new LatLng(location.getLatitude(), location.getLongitude() );
         } catch (Exception ex) {
+            Toast.makeText(view.getContext(), "Could not find location.", Toast.LENGTH_SHORT).show();
             ex.printStackTrace();
             return;
         }
@@ -184,6 +203,9 @@ public class NavigationFragment extends Fragment {
 
     //private void DisplayMarkers
 
+    /*
+        Function adapted from code from stackoverflow.com.
+    */
     private Address getAddressObjFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
@@ -203,6 +225,9 @@ public class NavigationFragment extends Fragment {
         return location;
     }
 
+    /*
+        Function adapted from code by John Mikolay and code from stackoverflow.com.
+    */
     public void OverlayRouteFromGeoJsonLineString(LineString  routeAsGeoJsonLineString) {
         try {
             // Get the first json route (our primary route)
