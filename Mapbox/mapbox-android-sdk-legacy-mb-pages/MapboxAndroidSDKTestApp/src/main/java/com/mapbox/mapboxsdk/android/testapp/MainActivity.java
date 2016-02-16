@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	public void addToContact(View view){
 		//Set intent action as ACTION_SEND
-		Intent intent = new Intent(Intent.ACTION_SEND);
+		Intent intent = new Intent("AddToContact");
 		String title  = "Add to";
 
 		//Set intent type to text/plain
@@ -224,6 +224,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		intent.putExtra("Contact_Number", number);
 
 		//Start intent
-		startActivity(intent);
+		startActivity(Intent.createChooser(intent, "Hey, bby"));
 	}
 }
