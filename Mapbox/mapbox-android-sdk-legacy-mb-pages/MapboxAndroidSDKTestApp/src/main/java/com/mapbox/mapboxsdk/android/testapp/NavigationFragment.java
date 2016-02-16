@@ -48,12 +48,6 @@ import com.mapbox.mapboxsdk.util.DataLoadingUtils;
  */
 
 public class NavigationFragment extends Fragment {
-    /*  TODO:
-        Figure out why you need to hit search twice.
-        Fix the custom marker layout after you've overlayed a map.
-        Test!
-     */
-
     private static final String TAG = "Navigation";
     private MapView currentMapView;
     private View currentView;
@@ -61,6 +55,8 @@ public class NavigationFragment extends Fragment {
     public boolean skipSearchBar = false;
     public LineString routeToDisplay = null;
     public LatLng initialLatAndLng = null;
+
+    private Address userLocation;
 
     private Marker cachedSearchedAddressMarker;
     private Marker cachedCurrentLocationMarker;
@@ -123,9 +119,9 @@ public class NavigationFragment extends Fragment {
 
     public void moveToAddToContactFragment() {
         AddToContactFragment newFrag = new AddToContactFragment();
-        newFrag.placeName = "Test";
-        newFrag.address = "123 Rainbow St.";
-        newFrag.phoneNumber = "+1 234 567 8910";
+        newFrag.placeName = userLocation.getFeatureName();
+        newFrag.address = userLocation.getAddressLine(0);
+        newFrag.phoneNumber = userLocation.getPhone();
 
         FragmentTransaction transaction = getFragmentManager().beginTransaction();
         transaction.replace(R.id.content_frame, newFrag);
@@ -182,6 +178,8 @@ public class NavigationFragment extends Fragment {
                 latAndLng.getLatitude(), latAndLng.getLongitude(), userLoc.getLatitude(), userLoc.getLongitude());
         marker.setToolTip(navInfoWindow);
         mapView.addMarker(marker);
+
+        userLocation = location;
 
         // Create a new marker for the current user location
         Marker userLocMarker = new Marker("Current Location", "", userLoc);
