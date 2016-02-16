@@ -4,6 +4,7 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.ContactsContract;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -118,6 +119,18 @@ public class NavigationFragment extends Fragment {
 
 
         return view;
+    }
+
+    public void moveToAddToContactFragment() {
+        AddToContactFragment newFrag = new AddToContactFragment();
+        newFrag.placeName = "Test";
+        newFrag.address = "123 Rainbow St.";
+        newFrag.phoneNumber = "+1 234 567 8910";
+
+        FragmentTransaction transaction = getFragmentManager().beginTransaction();
+        transaction.replace(R.id.content_frame, newFrag);
+        transaction.addToBackStack(null);
+        transaction.commit();
     }
 
     public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {

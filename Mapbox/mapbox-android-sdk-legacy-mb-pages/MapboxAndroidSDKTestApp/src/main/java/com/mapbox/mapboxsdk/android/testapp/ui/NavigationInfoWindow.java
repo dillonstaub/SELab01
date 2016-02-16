@@ -35,7 +35,7 @@ public class NavigationInfoWindow extends InfoWindow {
     private Double endLat;
     private Double endLong;
 
-    public NavigationInfoWindow(MapView mv, NavigationFragment owningFragment, FragmentManager fragmentManager, String title, String details,
+    public NavigationInfoWindow(MapView mv, final NavigationFragment owningFragment, FragmentManager fragmentManager, String title, String details,
                                 final Double startLatitude, final Double startLongitude, final Double endLatitude, final Double endLongitude) {
         super(R.layout.infowindow_navigation, mv);
 
@@ -56,15 +56,26 @@ public class NavigationInfoWindow extends InfoWindow {
         tvDetails.setText(details);
 
         TextView link = (TextView) mView.findViewById(R.id.navigation_link);
+        TextView addToContactLink = (TextView) mView.findViewById(R.id.navigation_addToContact);
         LinearLayout container = (LinearLayout) mView.findViewById(R.id.navigation_container);
 
 
         // Set the listener for clicking the marker
-        setOnTouchListener(new View.OnTouchListener() {
+        link.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Log.i(TAG, "onTouch() called");
+                Log.i(TAG, "onTouchForLink() called");
                 OnNavigationLinkClicked(startLatitude, startLongitude, endLatitude, endLongitude);
+                close();
+                return true;
+            }
+        });
+
+        addToContactLink.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Log.i(TAG, "onTouchForAddToContactLink() called");
+                owningNavFragment.moveToAddToContactFragment();
                 close();
                 return true;
             }
