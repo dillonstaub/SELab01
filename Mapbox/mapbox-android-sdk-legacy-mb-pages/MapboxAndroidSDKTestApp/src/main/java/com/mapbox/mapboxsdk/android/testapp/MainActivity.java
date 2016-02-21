@@ -205,7 +205,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 	public void addToContact(View view){
 		//Set intent action as ACTION_SEND
-		Intent intent = new Intent("AddToContact");
+		/*Intent intent = new Intent("AddToContact");
 		String title  = "Add to";
 
 		//Set intent type to text/plain
@@ -224,6 +224,25 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		intent.putExtra("Contact_Number", number);
 
 		//Start intent
-		startActivity(Intent.createChooser(intent, "Hey, bby"));
+		startActivity(Intent.createChooser(intent, "Hey, bby"));*/
+
+		Intent intent = getPackageManager().getLaunchIntentForPackage("com.example.guilhermecortes.contactmanager");
+
+		intent.setType("text/plain");
+
+		//Add extra strings to be sent to Contact Manager.
+		TextView textName = (TextView)findViewById(R.id.addToContact_placeName);
+		String name  = textName.getText().toString();
+		TextView textAddress = (TextView)findViewById(R.id.addToContact_address);
+		String address = textAddress.getText().toString();
+		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumber);
+		String number = textNumber.getText().toString();
+
+		intent.putExtra("Contact_Name", name);
+		intent.putExtra("Contact_Address", address);
+		intent.putExtra("Contact_Number", number);
+
+		startActivity(intent);
+
 	}
 }
