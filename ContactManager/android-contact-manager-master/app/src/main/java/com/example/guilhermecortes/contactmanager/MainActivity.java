@@ -10,6 +10,7 @@ import android.text.Editable;
 import android.text.Html;
 import android.text.TextWatcher;
 import android.text.method.LinkMovementMethod;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -44,7 +45,6 @@ public class MainActivity extends Activity {
         editor_thing = pref_thing.edit();
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         nameTxt = (EditText) findViewById(R.id.txtName);
         phoneTxt = (EditText) findViewById(R.id.txtPhone);
         emailTxt = (EditText) findViewById(R.id.txtEmail);
@@ -129,6 +129,22 @@ public class MainActivity extends Activity {
             }
         });
 
+
+        // Try to get the data if we were opened by MapView, then set that info as defaults
+        Intent intent = getIntent();
+        String mvName = intent.getStringExtra("Contact_Name");
+        String mvAddress = intent.getStringExtra("Contact_Address");
+        String mvNumber = intent.getStringExtra("Contact_Number");
+
+        if (mvName != null && mvName != "") {
+            nameTxt.setText(mvName);
+        }
+        if (mvAddress != null && mvAddress != "") {
+            addressTxt.setText(mvAddress);
+        }
+        if (mvNumber != null && mvNumber != "") {
+            phoneTxt.setText(mvNumber);
+        }
     }
 
     public void onActivityResult(int reqCode, int resCode, Intent data){

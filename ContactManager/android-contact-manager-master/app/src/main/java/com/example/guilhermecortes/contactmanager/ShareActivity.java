@@ -3,7 +3,9 @@ package com.example.guilhermecortes.contactmanager;
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.TextView;
+import android.widget.Toast;
 
 /**
  * Created by John on 2/16/2016.
@@ -19,6 +21,8 @@ public class ShareActivity extends Activity {
         Intent intent = getIntent();
         String type = intent.getType();
         String action = intent.getAction();
+
+        Log.i("TAGSSSSS", intent.getStringExtra("Contact_Name"));
 
         //Whether Intent action is ACTION_SEND
         if(Intent.ACTION_SEND.equals(action) && type != null){

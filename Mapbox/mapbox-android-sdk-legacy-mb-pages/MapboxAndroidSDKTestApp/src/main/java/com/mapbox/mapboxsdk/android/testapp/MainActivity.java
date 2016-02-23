@@ -231,11 +231,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		intent.setType("text/plain");
 
 		//Add extra strings to be sent to Contact Manager.
-		TextView textName = (TextView)findViewById(R.id.addToContact_placeName);
-		String name  = textName.getText().toString();
-		TextView textAddress = (TextView)findViewById(R.id.addToContact_address);
+		TextView textName = (TextView)findViewById(R.id.addToContact_placeNameRaw);
+		String name = textName.getText().toString();
+		TextView textAddress = (TextView)findViewById(R.id.addToContact_addressRaw);
 		String address = textAddress.getText().toString();
-		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumber);
+		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumberRaw);
 		String number = textNumber.getText().toString();
 
 		intent.putExtra("Contact_Name", name);
