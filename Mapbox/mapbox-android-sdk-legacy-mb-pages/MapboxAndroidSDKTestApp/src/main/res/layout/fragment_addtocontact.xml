@@ -34,6 +34,8 @@
             android:onClick="addToContact"
             android:text="ADD TO CONTACT"/>
 
+        <!-- These text views should always be hidden. They contain the "raw"
+         data; that is, the data without any 'Address: ' or 'Phone Number: ' prepended. -->
         <TextView
             android:id="@+id/addToContact_placeNameRaw"
             android:visibility="gone"

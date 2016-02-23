@@ -204,33 +204,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 	}
 
 	public void addToContact(View view){
-		//Set intent action as ACTION_SEND
-		/*Intent intent = new Intent("AddToContact");
-		String title  = "Add to";
-
-		//Set intent type to text/plain
-		intent.setType("text/plain");
-
-		//Add extra strings to be sent to Contact Manager.
-		TextView textName = (TextView)findViewById(R.id.addToContact_placeName);
-		String name  = textName.getText().toString();
-		TextView textAddress = (TextView)findViewById(R.id.addToContact_address);
-		String address = textAddress.getText().toString();
-		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumber);
-		String number = textNumber.getText().toString();
-
-		intent.putExtra("Contact_Name", name);
-		intent.putExtra("Contact_Address", address);
-		intent.putExtra("Contact_Number", number);
-
-		//Start intent
-		startActivity(Intent.createChooser(intent, "Hey, bby"));*/
-
+		// Create the intent to launch contact manager
 		Intent intent = getPackageManager().getLaunchIntentForPackage("com.example.guilhermecortes.contactmanager");
-
 		intent.setType("text/plain");
 
-		//Add extra strings to be sent to Contact Manager.
+		// Add extra strings to be sent to Contact Manager. Make sure to get the "raw" data
 		TextView textName = (TextView)findViewById(R.id.addToContact_placeNameRaw);
 		String name = textName.getText().toString();
 		TextView textAddress = (TextView)findViewById(R.id.addToContact_addressRaw);
@@ -238,10 +216,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		TextView textNumber = (TextView)findViewById(R.id.addToContact_phoneNumberRaw);
 		String number = textNumber.getText().toString();
 
+		// Put the data into the intent
 		intent.putExtra("Contact_Name", name);
 		intent.putExtra("Contact_Address", address);
 		intent.putExtra("Contact_Number", number);
 
+		// Launch it
 		startActivity(intent);
 
 	}
