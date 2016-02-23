@@ -79,8 +79,8 @@ public class NavigationRoutesFragment extends Fragment {
     }
 
     private void SwitchToNavigationFragment(LineString routeToDisplay) {
-        navFragment.routeToDisplay = routeToDisplay;
-        navFragment.skipSearchBar = true;
+        navFragment.setRouteToDisplay(routeToDisplay);
+        navFragment.setSkipSearchBar(true);
         getFragmentManager().popBackStackImmediate();
         getFragmentManager().popBackStackImmediate();
     }

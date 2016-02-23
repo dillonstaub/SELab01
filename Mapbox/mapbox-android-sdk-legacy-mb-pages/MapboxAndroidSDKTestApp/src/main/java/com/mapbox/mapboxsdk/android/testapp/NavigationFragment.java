@@ -52,9 +52,30 @@ public class NavigationFragment extends Fragment {
     private MapView currentMapView;
     private View currentView;
 
-    public boolean skipSearchBar = false;
-    public LineString routeToDisplay = null;
-    public LatLng initialLatAndLng = null;
+    private boolean skipSearchBar = false;
+    public boolean getSkipSearchBar() {
+        return skipSearchBar;
+    }
+    public void setSkipSearchBar(boolean newSkipSearchBar) {
+        skipSearchBar = newSkipSearchBar;
+    }
+
+    private LineString routeToDisplay = null;
+    public LineString getRouteToDisplay() {
+        return routeToDisplay;
+    }
+    public void setRouteToDisplay(LineString newRouteToDisplay) {
+        routeToDisplay = newRouteToDisplay;
+    }
+
+    private LatLng initialLatAndLng = null;
+    public LatLng getInitialLatAndLng() {
+        return initialLatAndLng;
+    }
+    public void setInitialLatAndLng(LatLng newInitialLatAndLng) {
+        initialLatAndLng = newInitialLatAndLng;
+    }
+
 
     private Address userLocation;
 
