@@ -52,6 +52,9 @@ public class NavigationFragment extends Fragment {
     private MapView currentMapView;
     private View currentView;
 
+    private final double ucLat = 39.131080;
+    private final double ucLong = -84.517784;
+
     private boolean skipSearchBar = false;
     public boolean getSkipSearchBar() {
         return skipSearchBar;
@@ -101,7 +104,7 @@ public class NavigationFragment extends Fragment {
         if (skipSearchBar) {
             if (initialLatAndLng == null) {
                 // Set to default (UC's campus)
-                initialLatAndLng = new LatLng(39.131080, -84.517784);
+                initialLatAndLng = new LatLng(ucLat, ucLong);
             }
 
             // Set the screen to show the mapview
@@ -188,7 +191,7 @@ public class NavigationFragment extends Fragment {
         // On emulators, this will return null since there is no way to get the user location.
         // So, if userLoc is null, give it this hardcoded location (UC's campus).
         if (userLoc == null) {
-            userLoc = new LatLng(39.131080, -84.517784);
+            userLoc = new LatLng(ucLat, ucLong);
         }
 
         // Create a new marker for the entered address
