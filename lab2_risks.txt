@@ -1,0 +1,15 @@
+1. As new features are added, bugs are more liable to occur, especially when the new features rely on the previous ones. The main
+way to combat this risk is to add unit test cases to be certian that our existing code is robust.
+
+2.	Github, which we used to store our code and add versioning, has a number of advanced and "dangerous" features. If one of our
+team members inadvernetly uses one, they could wipe some of our code changes, forcing us to redo some of the implementation.
+
+3.	As labs get more complex, team member "burnout" is a possibility. Because of this, balancing the workload evenly among our team
+members is a must. This could be difficult if features are too sequential and not a lot of work can be done in parallel.
+
+4.	Our knowledge of the Android platform improved substantially since lab 1; however, there are many complex facets of the SDK that
+our team is not familiar with. Thus, a risk for us is a lack of technical skill.
+
+5.	Communication is always a big risk; if one team member has resposibilities that he is not aware of, the project could fall behind.
+To combat this, we use github to store code versions and commit comments, but regular verbal and text communication is also
+important.
