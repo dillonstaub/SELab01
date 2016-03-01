@@ -90,7 +90,6 @@ public class NavigationFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_navigation, container, false);
 
-
         // Find all the UI elements
         Button navigationAddressButton = (Button) view.findViewById(R.id.navigation_address_button);
         final LinearLayout addressBar = (LinearLayout) view.findViewById(R.id.navigationAddressBar);
@@ -110,7 +109,7 @@ public class NavigationFragment extends Fragment {
             // Set the screen to show the mapview
             PrepUIToShowMap(initialLatAndLng, addressBar, mapView);
 
-            // Add cached markers
+            // Add cached search address marker
             if (cachedSearchedAddressMarker != null) {
                 if (cachedMarkerStyle != null) {
                     cachedSearchedAddressMarker.setToolTip(cachedMarkerStyle);
@@ -118,6 +117,7 @@ public class NavigationFragment extends Fragment {
                 mapView.addMarker(cachedSearchedAddressMarker);
             }
 
+            // Add cached current location marker
             if (cachedCurrentLocationMarker != null) {
                 mapView.addMarker(cachedCurrentLocationMarker);
             }
@@ -131,16 +131,14 @@ public class NavigationFragment extends Fragment {
             navigationAddressButton.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    navigationSearchButton(v, addressBar, addressTextBox, mapView);
+                    navigationSearchButtonClicked(v, addressBar, addressTextBox, mapView);
                 }
             });
         }
-
-
-
         return view;
     }
 
+    // Public method for moving current location information to AddToContactFragment
     public void moveToAddToContactFragment() {
         AddToContactFragment newFrag = new AddToContactFragment();
         newFrag.placeName = userLocation.getFeatureName();
@@ -153,7 +151,8 @@ public class NavigationFragment extends Fragment {
         transaction.commit();
     }
 
-    public void navigationSearchButton(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
+    // Callback method invoked when the user selects the "Search" button from the Navigation menu item
+    public void navigationSearchButtonClicked(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
 
         // Close the keyboard
@@ -164,6 +163,8 @@ public class NavigationFragment extends Fragment {
         String address = addressTextBox.getText().toString();
         Address location = getAddressObjFromAddress(getActivity().getApplicationContext(), address);
         LatLng latAndLng = null;
+
+        // Try to get the latitude and longitude, otherwise show toast and catch exception and return
         try {
             latAndLng = new LatLng(location.getLatitude(), location.getLongitude() );
         } catch (Exception ex) {
@@ -172,7 +173,7 @@ public class NavigationFragment extends Fragment {
             return;
         }
 
-        // If it's null, do nothing
+        // If somehow latAndLng is still null, show toast and return
         if (latAndLng == null)
         {
             Toast.makeText(view.getContext(), "Could not find location.", Toast.LENGTH_SHORT).show();
@@ -214,6 +215,7 @@ public class NavigationFragment extends Fragment {
         cachedMarkerStyle = navInfoWindow;
     }
 
+    // Private function to prepare for map being shown
     private void PrepUIToShowMap(LatLng initialLocation, LinearLayout navAddressBar, MapView mapView) {
         navAddressBar.setVisibility(View.INVISIBLE);
         mapView.setVisibility(View.VISIBLE);
@@ -223,11 +225,8 @@ public class NavigationFragment extends Fragment {
         mapView.setZoom(16);
     }
 
-    //private void DisplayMarkers
 
-    /*
-        Function adapted from code from stackoverflow.com.
-    */
+    // Function adapted from code from stackoverflow.com.
     private Address getAddressObjFromAddress(Context context, String strAddress) {
         Geocoder coder = new Geocoder(context);
         List<Address> address;
@@ -247,9 +246,8 @@ public class NavigationFragment extends Fragment {
         return location;
     }
 
-    /*
-        Function adapted from code by John Mikolay and code from stackoverflow.com.
-    */
+
+    // Function adapted from code by John Mikolay and code from stackoverflow.com.
     public void OverlayRouteFromGeoJsonLineString(LineString  routeAsGeoJsonLineString) {
         try {
             // Get the first json route (our primary route)

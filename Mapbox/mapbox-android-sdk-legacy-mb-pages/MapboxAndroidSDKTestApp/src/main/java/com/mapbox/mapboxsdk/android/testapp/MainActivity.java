@@ -203,6 +203,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		}
 	}
 
+	// Public function that creates the intent and sends info through it in order to add a contact to ContactManager
 	public void addToContact(View view){
 		// Create the intent to launch contact manager
 		Intent intent = getPackageManager().getLaunchIntentForPackage("com.example.guilhermecortes.contactmanager");
@@ -221,7 +222,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		intent.putExtra("Contact_Address", address);
 		intent.putExtra("Contact_Number", number);
 
-		// Launch it
+		// Start the intent so that ContactManager can retrieve data
 		startActivity(intent);
 
 	}
