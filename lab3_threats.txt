@@ -1,0 +1,14 @@
+1.	Communication remains a big risk, especially as projects become more complex. To combat this, we will have to ensure that
+each member keeps the team up to date on any code or document changes and regularly integrates with everyone else.
+
+2.	Available time is also a risk. As finals approach and other projects become due, team members may not have as much free time.
+Thus, good time management will be paramount to success.
+
+3.	Knowledge and ability to use good software engineering principles is becoming increasingly important as our app becomes
+more complex. Because of this, the threat of having our code and documents become unmanageable is possible.
+
+4.	Workload balance is a recurring risk for us. It's easy to inadvertently assign too many or too few tasks to one individual,
+which can result in inconsitent or lower quality work.
+
+5.	External threats are becoming a bigger risk as our app becomes bigger and connects to other apps. Our threats list that we
+submitted with this lab outlines many of the possibilities.
