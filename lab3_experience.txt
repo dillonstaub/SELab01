@@ -1,0 +1,4 @@
+Working on the data flow diagrams in Lab 3 gave us insight into how our app interacted with expernal entities,
+data flows and stores, and where potential vulnerabilities were. None of us had made DFDs before, so working
+through these was a valuable experience. In addition, identifying the key processes of our apps gave us a more
+complete knowledge of how our entire system behaved and potential room for improvement.
