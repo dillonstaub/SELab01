@@ -25,11 +25,16 @@ import android.widget.TabHost;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import junit.framework.Assert;
+
+import java.security.SecureRandom;
 import java.util.ArrayList;
 import java.util.List;
 
-
-
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 
 public class MainActivity extends Activity {
 
@@ -38,6 +43,8 @@ public class MainActivity extends Activity {
     List<Contact> Contacts = new ArrayList<Contact>();
     ListView contactListView;
     Uri imageURI = null;
+
+    private static final String encryptionKey = "00112233445566778899AABBCCDDEEFF";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -131,21 +138,65 @@ public class MainActivity extends Activity {
 
 
         // Try to get the data if we were opened by MapView, then set that info as defaults
-        Intent intent = getIntent();
-        String mvName = intent.getStringExtra("Contact_Name");
-        String mvAddress = intent.getStringExtra("Contact_Address");
-        String mvNumber = intent.getStringExtra("Contact_Number");
+        try {
+            Intent intent = getIntent();
+            String mvName = intent.getStringExtra("Contact_Name");
+            Log.i("onCreate", "mvName");
+            Log.i("onCreate", mvName);
+            Log.i("onCreate", "mvNamePost");
+            mvName = AESHelper.decrypt(mvName, encryptionKey);
+            String mvAddress = intent.getStringExtra("Contact_Address");
+            Log.i("onCreate", mvAddress);
+            mvAddress = AESHelper.decrypt(mvAddress, encryptionKey);
+            String mvNumber = intent.getStringExtra("Contact_Number");
+            Log.i("onCreate", mvNumber);
+            mvNumber = AESHelper.decrypt(mvNumber, encryptionKey);
 
-        if (mvName != null && mvName != "") {
-            nameTxt.setText(mvName);
-        }
-        if (mvAddress != null && mvAddress != "") {
-            addressTxt.setText(mvAddress);
-        }
-        if (mvNumber != null && mvNumber != "") {
-            phoneTxt.setText(mvNumber);
+            Log.i("onCreate", mvName);
+            Log.i("onCreate", mvAddress);
+            Log.i("onCreate", mvNumber);
+
+            if (mvName != null && mvName != "") {
+                nameTxt.setText(mvName);
+            }
+            if (mvAddress != null && mvAddress != "") {
+                addressTxt.setText(mvAddress);
+            }
+            if (mvNumber != null && mvNumber != "") {
+                phoneTxt.setText(mvNumber);
+            }
+        } catch (Exception e) {
+            Log.i("onCreate", "failure decrypting data: " + e.getMessage());
         }
     }
+/*
+    private static String decryptData(final String encryptedData)
+            throws Exception {
+        Assert.assertNotNull(encryptedData, "encryptedData is required");
+
+        // Get the key
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        sr.setSeed(encryptionKey.getBytes());
+        kgen.init(128, sr); // 192 and 256 bits may not be available
+        SecretKey skey = kgen.generateKey();
+        byte[] rawKey = skey.getEncoded();
+
+        // Covert from hex
+        int len = encryptedData.length() / 2;
+        byte[] result = new byte[len];
+        for (int i = 0; i < len; i++)
+            result[i] = Integer.valueOf(
+                    encryptedData.substring(2 * i, 2 * i + 2), 16).byteValue();
+
+        // Do the decryption
+        SecretKeySpec skeySpec = new SecretKeySpec(rawKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.DECRYPT_MODE, skeySpec);
+        byte[] decrypted = cipher.doFinal(result);
+
+        return new String(decrypted);
+    }*/
 
     public void onActivityResult(int reqCode, int resCode, Intent data){
         if (resCode == RESULT_OK){

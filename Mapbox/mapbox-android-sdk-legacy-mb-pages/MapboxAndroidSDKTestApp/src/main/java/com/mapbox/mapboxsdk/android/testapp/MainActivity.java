@@ -11,11 +11,22 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.TextView;
+
+import junit.framework.Assert;
+
+import java.security.SecureRandom;
+
+import javax.crypto.Cipher;
+import javax.crypto.KeyGenerator;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
+
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
 
@@ -218,12 +229,63 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		String number = textNumber.getText().toString();
 
 		// Put the data into the intent
-		intent.putExtra("Contact_Name", name);
-		intent.putExtra("Contact_Address", address);
-		intent.putExtra("Contact_Number", number);
+        try {
+			String ctctName = AESHelper.encrypt(name, encryptionKey);
+			Log.i("encrypting", ctctName);
+			String ctctAddr = AESHelper.encrypt(address, encryptionKey);
+			Log.i("encrypting", ctctAddr);
+			String ctctNmbr = AESHelper.encrypt(number, encryptionKey);
+			Log.i("encrypting", ctctNmbr);
+            intent.putExtra("Contact_Name", ctctName);
+            intent.putExtra("Contact_Address", ctctAddr);
+            intent.putExtra("Contact_Number", ctctNmbr);
+        } catch (Exception e) {
+            Log.i("addToContact", "error encrypting data: " + e.getMessage());
+        }
 
 		// Start the intent so that ContactManager can retrieve data
 		startActivity(intent);
 
 	}
+
+    private static final String encryptionKey = "00112233445566778899AABBCCDDEEFF";
+	/*private static String encryptData(final String data)
+		throws Exception {
+		Assert.assertNotNull(data, "data is required");
+
+		/*final Mac hMacSHA256 = Mac.getInstance("HmacSHA256");
+		byte[] hmacKeyBytes = key.getBytes(StandardCharsets.UTF_8);
+		final SecretKeySpec secretKey = new SecretKeySpec(hmacKeyBytes, "HmacSHA256");
+		hMacSHA256.init(secretKey);
+		byte[] dataBytes = data.getBytes(StandardCharsets.UTF_8);
+		byte[] res = hMacSHA256.doFinal(dataBytes);
+
+		return DataTypeConverter.printBase64Binary(res);*/
+
+        /*
+        byte[] keyBytes = key.getBytes();
+        SecretKeySpec keySpecKey = new SecretKeySpec(keyBytes, "DES");
+        IvParameterSpec ivSpec = new IvParameterSpec(ivBytes);*
+
+        // Get the key
+        KeyGenerator kgen = KeyGenerator.getInstance("AES");
+        SecureRandom sr = SecureRandom.getInstance("SHA1PRNG");
+        sr.setSeed(encryptionKey.getBytes());
+        kgen.init(128, sr); // 192 and 256 bits may not be available
+        SecretKey skey = kgen.generateKey();
+        byte[] rawKey = skey.getEncoded();
+
+        // Do the encryption
+        SecretKeySpec skeySpec = new SecretKeySpec(rawKey, "AES");
+        Cipher cipher = Cipher.getInstance("AES");
+        cipher.init(Cipher.ENCRYPT_MODE, skeySpec);
+        byte[] encrypted = cipher.doFinal(data.getBytes());
+
+        // Convert to hex
+        StringBuffer result = new StringBuffer(2 * encrypted.length);
+        for (int i = 0; i < encrypted.length; i++) {
+            appendHex(result, encrypted[i]);
+        }
+        return result.toString();
+	}*/
 }
