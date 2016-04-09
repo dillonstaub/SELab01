@@ -231,14 +231,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 		// Put the data into the intent
         try {
 			String ctctName = AESHelper.encrypt(name, encryptionKey);
-			Log.i("encrypting", ctctName);
+			//Log.i("encrypting", ctctName);
 			String ctctAddr = AESHelper.encrypt(address, encryptionKey);
-			Log.i("encrypting", ctctAddr);
+			//Log.i("encrypting", ctctAddr);
 			String ctctNmbr = AESHelper.encrypt(number, encryptionKey);
-			Log.i("encrypting", ctctNmbr);
+			//Log.i("encrypting", ctctNmbr);
+			String encryptedAuthCode = AESHelper.buildMac(encryptionKey, name, address, number);
             intent.putExtra("Contact_Name", ctctName);
             intent.putExtra("Contact_Address", ctctAddr);
             intent.putExtra("Contact_Number", ctctNmbr);
+			intent.putExtra("Auth_Mac", encryptedAuthCode);
+            Log.i("encrypting: ", name + "\n" + address + "\n" + number + "\n" + encryptionKey);
+            Log.i("encrypting: ", encryptionKey);
         } catch (Exception e) {
             Log.i("addToContact", "error encrypting data: " + e.getMessage());
         }

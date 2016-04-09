@@ -45,6 +45,7 @@ public class MainActivity extends Activity {
     Uri imageURI = null;
 
     private static final String encryptionKey = "00112233445566778899AABBCCDDEEFF";
+    private static final String authCode = "a4027119f0ef686219b636be44a9f415fc61339c3f09162ca6c4c0f0cc40687a";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -140,21 +141,23 @@ public class MainActivity extends Activity {
         // Try to get the data if we were opened by MapView, then set that info as defaults
         try {
             Intent intent = getIntent();
+
             String mvName = intent.getStringExtra("Contact_Name");
-            Log.i("onCreate", "mvName");
-            Log.i("onCreate", mvName);
-            Log.i("onCreate", "mvNamePost");
             mvName = AESHelper.decrypt(mvName, encryptionKey);
             String mvAddress = intent.getStringExtra("Contact_Address");
-            Log.i("onCreate", mvAddress);
             mvAddress = AESHelper.decrypt(mvAddress, encryptionKey);
             String mvNumber = intent.getStringExtra("Contact_Number");
-            Log.i("onCreate", mvNumber);
             mvNumber = AESHelper.decrypt(mvNumber, encryptionKey);
 
-            Log.i("onCreate", mvName);
-            Log.i("onCreate", mvAddress);
-            Log.i("onCreate", mvNumber);
+            // Check auth code
+            String providedAuthCode = intent.getStringExtra("Auth_Mac");
+            //String newAuthCode = AESHelper.buildMac(encryptionKey, mvName, mvAddress, mvNumber);
+            Log.i("decrypting: ", mvName + "\n" + mvAddress + "\n" + mvNumber + "\n" + encryptionKey);
+            Log.i("decrypting: ", encryptionKey);
+            //Log.i("auth codes: ", providedAuthCode + "\n" + newAuthCode);
+            if (/*!providedAuthCode.equals(newAuthCode)*/ !AESHelper.macIsValid(providedAuthCode, encryptionKey, mvName, mvAddress, mvNumber)) {
+                throw new Exception("Auth codes didn't match.");
+            }
 
             if (mvName != null && mvName != "") {
                 nameTxt.setText(mvName);
