@@ -143,11 +143,11 @@ public class MainActivity extends Activity {
             Intent intent = getIntent();
 
             String mvName = intent.getStringExtra("Contact_Name");
-            mvName = AESHelper.decrypt(mvName, encryptionKey);
+            mvName = Encryptor.decrypt(mvName, encryptionKey);
             String mvAddress = intent.getStringExtra("Contact_Address");
-            mvAddress = AESHelper.decrypt(mvAddress, encryptionKey);
+            mvAddress = Encryptor.decrypt(mvAddress, encryptionKey);
             String mvNumber = intent.getStringExtra("Contact_Number");
-            mvNumber = AESHelper.decrypt(mvNumber, encryptionKey);
+            mvNumber = Encryptor.decrypt(mvNumber, encryptionKey);
 
             // Check auth code
             String providedAuthCode = intent.getStringExtra("Auth_Mac");
@@ -155,7 +155,7 @@ public class MainActivity extends Activity {
             Log.i("decrypting: ", mvName + "\n" + mvAddress + "\n" + mvNumber + "\n" + encryptionKey);
             Log.i("decrypting: ", encryptionKey);
             //Log.i("auth codes: ", providedAuthCode + "\n" + newAuthCode);
-            if (/*!providedAuthCode.equals(newAuthCode)*/ !AESHelper.macIsValid(providedAuthCode, encryptionKey, mvName, mvAddress, mvNumber)) {
+            if (/*!providedAuthCode.equals(newAuthCode)*/ !Encryptor.macIsValid(providedAuthCode, encryptionKey, mvName, mvAddress, mvNumber)) {
                 throw new Exception("Auth codes didn't match.");
             }
 

@@ -15,17 +15,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.TextView;
-
-import junit.framework.Assert;
-
-import java.security.SecureRandom;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
 
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener {
@@ -230,13 +220,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 		// Put the data into the intent
         try {
-			String ctctName = AESHelper.encrypt(name, encryptionKey);
+			String ctctName = Encryptor.encrypt(name, encryptionKey);
 			//Log.i("encrypting", ctctName);
-			String ctctAddr = AESHelper.encrypt(address, encryptionKey);
+			String ctctAddr = Encryptor.encrypt(address, encryptionKey);
 			//Log.i("encrypting", ctctAddr);
-			String ctctNmbr = AESHelper.encrypt(number, encryptionKey);
+			String ctctNmbr = Encryptor.encrypt(number, encryptionKey);
 			//Log.i("encrypting", ctctNmbr);
-			String encryptedAuthCode = AESHelper.buildMac(encryptionKey, name, address, number);
+			String encryptedAuthCode = Encryptor.buildMac(encryptionKey, name, address, number);
             intent.putExtra("Contact_Name", ctctName);
             intent.putExtra("Contact_Address", ctctAddr);
             intent.putExtra("Contact_Number", ctctNmbr);
