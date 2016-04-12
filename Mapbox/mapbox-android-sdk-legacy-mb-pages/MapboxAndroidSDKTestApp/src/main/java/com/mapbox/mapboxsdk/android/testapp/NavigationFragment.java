@@ -37,10 +37,15 @@ import org.json.JSONObject;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.security.NoSuchAlgorithmException;
+import java.text.DateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import java.io.FileOutputStream;
+import java.io.OutputStreamWriter;
 import com.mapbox.mapboxsdk.util.DataLoadingUtils;
 
 /**
@@ -154,15 +159,31 @@ public class NavigationFragment extends Fragment {
     // Callback method invoked when the user selects the "Search" button from the Navigation menu item
     public void navigationSearchButtonClicked(View view, LinearLayout navAddressBar, EditText addressTextBox, MapView mapView) {
         Log.i(TAG, "navigationSearchButton() called");
-
+        Context ctx = getActivity().getApplicationContext();
         // Close the keyboard
         InputMethodManager imm  = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
         imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
         // Get the address and corresponding LatLng
         String address = addressTextBox.getText().toString();
-        Address location = getAddressObjFromAddress(getActivity().getApplicationContext(), address);
+        String currentDateTimeString;
+        Address location = getAddressObjFromAddress(ctx, address);
         LatLng latAndLng = null;
+
+        // Write a log file consisting of what the user searched and what Mapbox API returned with timestamps
+        // in order to refute repudiation attacks
+        try {
+            FileOutputStream fileout = ctx.openFileOutput("MapboxLog.txt", ctx.MODE_PRIVATE);
+            OutputStreamWriter outputWriter = new OutputStreamWriter(fileout);
+            currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+            outputWriter.append("[" + currentDateTimeString + "]: " + "User entered - " + address + "\n\r");
+            currentDateTimeString = DateFormat.getDateTimeInstance().format(new Date());
+            outputWriter.append("[" + currentDateTimeString + "]: " + "Mapbox returned - " + location.getAddressLine(0) + "\n\r");
+            outputWriter.close();
+        }
+        catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // Try to get the latitude and longitude, otherwise show toast and catch exception and return
         try {
