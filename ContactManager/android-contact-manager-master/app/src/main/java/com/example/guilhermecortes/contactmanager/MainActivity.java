@@ -103,7 +103,7 @@ public class MainActivity extends Activity {
         addBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Contacts.add(new Contact(nameTxt.getText().toString(), phoneTxt.getText().toString(), emailTxt.getText().toString(), addressTxt.getText().toString(), imageURI));
+                Contacts.add(new Contact(Encryptor.encrypt(nameTxt.getText().toString(),encryptionKey), Encryptor.encrypt(phoneTxt.getText().toString(),encryptionKey), Encryptor.encrypt(emailTxt.getText().toString(), encryptionKey), /*Encryptor.encrypt(*/addressTxt.getText().toString()/*,encryptionKey)*/, imageURI));
                 populateList();
                 Toast.makeText(getApplicationContext(), nameTxt.getText().toString() +  " has been added to your Contacts!", Toast.LENGTH_SHORT).show();
             }
@@ -243,46 +243,52 @@ public class MainActivity extends Activity {
             TextView address = null;
             //SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
             boolean use_hyperlinks = (pref_thing.getBoolean("address",false));
+            if(use_hyperlinks) {
+                Toast.makeText(this.getContext(), "use hyperlinks status: true", Toast.LENGTH_LONG).show();
+            } else if(!use_hyperlinks){
+                Toast.makeText(this.getContext(), "use hyperlinks status: false", Toast.LENGTH_LONG).show();
+            }
 
             try {
 
 
 
                 String mv_name = "";
-                try {
-                    mv_name = Encryptor.encrypt(currentContact.get_name(), encryptionKey);
-                } catch (Exception e1){
+             //   try {
+                    //mv_name = Encryptor.encrypt(currentContact.get_name(), encryptionKey);
+               // } catch (Exception e1){
                     mv_name = currentContact.get_name();
-                }
+              //  }
                 String mv_phone = "";
-                try {
-                    mv_phone = Encryptor.encrypt(currentContact.get_phone(), encryptionKey);
-                } catch( Exception e2){
+              //  try {
+                    //mv_phone = Encryptor.encrypt(currentContact.get_phone(), encryptionKey);
+              //  } catch( Exception e2){
                     mv_phone = currentContact.get_phone();
-                }
+               // }
                 String mv_email ="";
-                try{
-                    mv_email = Encryptor.encrypt(currentContact.get_email(), encryptionKey);
-                } catch (Exception e3){
+               // try{
+                    //mv_email = Encryptor.encrypt(currentContact.get_email(), encryptionKey);
+               // } catch (Exception e3){
                     mv_email = currentContact.get_email();
-                }
+               // }
 
                 String mv_address = "";
                 if(use_hyperlinks) {
                     address = (TextView) view.findViewById(R.id.cAddress);
-                    try {
-                        mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + Encryptor.encrypt(currentContact.get_address(), encryptionKey) + "</a> ").toString();
-                    } catch (Exception e4) {
-                        mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> ").toString();
-                    }
-                    address.setMovementMethod(LinkMovementMethod.getInstance());
+                   // try {
+                        //mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + Encryptor.encrypt(currentContact.get_address(), encryptionKey) + "</a> ").toString();
+                  //  } catch (Exception e4) {
+                        mv_address = currentContact.get_address();
+
+                   // }
+
                 } else {
                     address = (TextView) view.findViewById(R.id.cAddress);
-                    try {
-                        mv_address = Encryptor.encrypt(currentContact.get_address(), encryptionKey);
-                    } catch (Exception e4){
+                  //  try {
+                        //mv_address = Encryptor.encrypt(currentContact.get_address(), encryptionKey);
+                  //  } catch (Exception e4){
                         mv_address = currentContact.get_address();
-                    }
+                   // }
                 }
                 String encryptedAuthCode = Encryptor.buildMac(encryptionKey, mv_name, mv_address, mv_phone);
 
@@ -306,7 +312,15 @@ public class MainActivity extends Activity {
                     phone.setText(Encryptor.decrypt(mv_phone, encryptionKey));
                 }
                 if(mv_address != null && mv_address != ""){
-                    address.setText(Encryptor.decrypt(mv_address, encryptionKey));
+                    address = (TextView) view.findViewById(R.id.cAddress);
+                    if(use_hyperlinks) {
+                        address.setMovementMethod(LinkMovementMethod.getInstance());
+                        address.setText(Html.fromHtml("<a href=\"http://www.google.com\"> " + /*Encryptor.decrypt(*/mv_address/*, encryptionKey)*/ + " </a> ").toString());
+                        address.setMovementMethod(LinkMovementMethod.getInstance());
+                    } else {
+                        address.setText(/*Encryptor.decrypt(*/mv_address/*, encryptionKey)*/);
+                    }
+                    //mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> ").toString();
                 }
 
 
