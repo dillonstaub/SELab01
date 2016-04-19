@@ -234,23 +234,87 @@ public class MainActivity extends Activity {
 
             Contact currentContact = Contacts.get(position);
 
-            TextView name = (TextView) view.findViewById(R.id.contactName);
-            name.setText(currentContact.get_name());
-            TextView phone = (TextView) view.findViewById(R.id.phoneNumber);
-            phone.setText(currentContact.get_phone());
-            TextView email = (TextView) view.findViewById(R.id.emailAddress);
-            email.setText(currentContact.get_email());
 
+            TextView name = (TextView) view.findViewById(R.id.contactName);
+            ///////////////////////////////////////////////////////////////////////////////////////////////////
+            TextView phone = (TextView) view.findViewById(R.id.phoneNumber);
+
+            TextView email = (TextView) view.findViewById(R.id.emailAddress);
             TextView address = null;
             //SharedPreferences pref_thing = getSharedPreferences("MyPref",MODE_PRIVATE);
             boolean use_hyperlinks = (pref_thing.getBoolean("address",false));
-            if(use_hyperlinks) {
-                address = (TextView) view.findViewById(R.id.cAddress);
-                address.setText(Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> "));
-                address.setMovementMethod(LinkMovementMethod.getInstance());
-            } else {
-                address = (TextView) view.findViewById(R.id.cAddress);
-                address.setText(currentContact.get_address());
+
+            try {
+
+
+
+                String mv_name = "";
+                try {
+                    mv_name = Encryptor.encrypt(currentContact.get_name(), encryptionKey);
+                } catch (Exception e1){
+                    mv_name = currentContact.get_name();
+                }
+                String mv_phone = "";
+                try {
+                    mv_phone = Encryptor.encrypt(currentContact.get_phone(), encryptionKey);
+                } catch( Exception e2){
+                    mv_phone = currentContact.get_phone();
+                }
+                String mv_email ="";
+                try{
+                    mv_email = Encryptor.encrypt(currentContact.get_email(), encryptionKey);
+                } catch (Exception e3){
+                    mv_email = currentContact.get_email();
+                }
+
+                String mv_address = "";
+                if(use_hyperlinks) {
+                    address = (TextView) view.findViewById(R.id.cAddress);
+                    try {
+                        mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + Encryptor.encrypt(currentContact.get_address(), encryptionKey) + "</a> ").toString();
+                    } catch (Exception e4) {
+                        mv_address = Html.fromHtml("<a href=\"http://www.google.com\">" + currentContact.get_address() + "</a> ").toString();
+                    }
+                    address.setMovementMethod(LinkMovementMethod.getInstance());
+                } else {
+                    address = (TextView) view.findViewById(R.id.cAddress);
+                    try {
+                        mv_address = Encryptor.encrypt(currentContact.get_address(), encryptionKey);
+                    } catch (Exception e4){
+                        mv_address = currentContact.get_address();
+                    }
+                }
+                String encryptedAuthCode = Encryptor.buildMac(encryptionKey, mv_name, mv_address, mv_phone);
+
+
+
+                // Check auth code
+                Log.i("decrypting: ", mv_name + "\n" + mv_address + "\n" + mv_phone + "\n" + encryptionKey);
+                Log.i("decrypting: ", encryptionKey);
+                //Log.i("auth codes: ", providedAuthCode + "\n" + newAuthCode);
+                if (/*!providedAuthCode.equals(newAuthCode)*/ !Encryptor.macIsValid(encryptedAuthCode, encryptionKey, mv_name, mv_address, mv_phone)) {
+                    throw new Exception("Auth codes didn't match.");
+                }
+
+                if (mv_name != null && mv_name != "") {
+                    name.setText(Encryptor.decrypt(mv_name,encryptionKey));
+                }
+                if (mv_email != null && mv_email != "") {
+                    email.setText(Encryptor.decrypt(mv_email,encryptionKey));
+                }
+                if (mv_phone != null && mv_phone != "") {
+                    phone.setText(Encryptor.decrypt(mv_phone, encryptionKey));
+                }
+                if(mv_address != null && mv_address != ""){
+                    address.setText(Encryptor.decrypt(mv_address, encryptionKey));
+                }
+
+
+
+
+            } catch (Exception e) {
+                Log.i("getView", "failure decrypting data: " + e.getMessage());
+                e.printStackTrace();
             }
 
 
@@ -322,4 +386,5 @@ public class MainActivity extends Activity {
 
     private SharedPreferences pref_thing = null;
     private SharedPreferences.Editor editor_thing = null;
+
 }
